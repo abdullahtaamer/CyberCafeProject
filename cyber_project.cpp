@@ -42,7 +42,7 @@ void Reservations();
 
 int main()
 {
-    cout <<"abdo";
+    cout <<"testtttt";
 }
 
 void Reservations()
