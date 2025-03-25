@@ -43,6 +43,7 @@ void Reservations();
 int main()
 {
     cout <<"testtttt";
+    cout <<"bgarabb";
 }
 
 void Reservations()
