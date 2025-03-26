@@ -52,7 +52,7 @@ struct customer
     int size = sizeof(reservations) / sizeof(reservations[0]); // Total number of reservations of a specific customer
 };
 vector<customer> Custs;
-void cafeMenu(int, int);
+float cafeMenu(int, int);
 
 int main()
 {
@@ -67,7 +67,7 @@ int main()
     cafeMenu(Nfood, Ndrinks);
 }
 
-void cafeMenu(int Nf, int Nd)
+float cafeMenu(int Nf, int Nd)
 {
     // for (int i = 0; i < Nf; i++)
     //{
@@ -94,7 +94,8 @@ void cafeMenu(int Nf, int Nd)
     //     cin.ignore();
     // }
 
-    int type, code, Totalcost, quantity;
+    int type, code, quantity;
+    float Totalcost = 0;
     char ans;
     // Step 1 on displaying the food menu
     food f[14] = {{"Cheese", 123, 30}, {"Smoked Turky", 222, 40}, {"Chicken", 144, 60}, {"Croissant", 555, 40}, {"Puff pastry", 333, 30}, {"Danish Pastry", 125, 60}, {"Cinnamon Roll", 111, 80}, {"Biscuits or Cookies", 226, 30}, {"Chips or Snacks", 771, 30}, {"Instant Noodless", 126, 40}, {"Mini Pizza", 199, 50}, {"Pan Cakes", 772, 40}, {"Light Burger", 312, 70}};
@@ -202,7 +203,6 @@ void cafeMenu(int Nf, int Nd)
             break;
         }
     }
-    Totalcost = 0;
 
     do
     {
@@ -214,25 +214,22 @@ void cafeMenu(int Nf, int Nd)
         cin >> quantity;
         cin.ignore();
         cout << endl;
-        for (int i = 0; i < Nf; i++)
+        for (int i = 0; i <= Nf + Nd; i++)
         {
             if (code == f[i].code)
             {
                 Totalcost += (f[i].price * quantity);
                 break;
             }
-            else
+            else if (code == d[i].code)
             {
-                for (int i = 0; i < Nd; i++)
-                {
-                    if (code == d[i].code)
-                    {
-                        Totalcost += (d[i].price * quantity);
-                        break;
-                    }
-                }
+                Totalcost += (d[i].price * quantity);
+                break;
             }
-            break;
+            else if (i == Nf + Nd && code != f[i].code && code != d[i].code)
+            {
+                cout << "Invalid code" << endl;
+            }
         }
         cout << "Would you like to add another product to your cart?" << endl;
         cout << " If yes enter y\n"
@@ -243,5 +240,5 @@ void cafeMenu(int Nf, int Nd)
     } while (ans == 'y' || ans == 'Y');
     cout << "Your Total cost is: " << Totalcost << endl;
     cout << "Enjoy your meal!^_^" << endl;
-    ;
+    return Totalcost;
 }
