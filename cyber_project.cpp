@@ -42,9 +42,10 @@ struct customer
     string phoneNumbers[3];
     Reservation reservations[10];
     int size = sizeof(reservations) / sizeof(reservations[0]); // Total number of reservations of a specific customer
-}Custs[40];
+} Custs[40];
 
 void Reservations();
+void editReservation();
 void login();
 void registr();
 
@@ -86,6 +87,58 @@ void Reservations()
             continue;
         }
     }
+}
+
+void editReservation()
+{
+    do
+    {
+        cout << "press H to edit time || T to edit type || D to edit date \n";
+        char choice;
+        cin >> choice;
+        if (choice == 'H' || choice == 'h') // edit time // hours
+        {
+            cout << "How much time will you stay (NOTE: We only deal with hours so it's currently unavailable to reserve 30 mins, 15 min, etc )";
+            cin >> Custs[constant].reservations[Custs[constant].size].time;
+        }
+        else if (choice == 'T' || choice == 't')  //edit time
+        {
+            while (true)
+            {
+                cout << "\nPlease press M for Multiplayer or S for Single";
+                cin >> Custs[constant].reservations[Custs[constant].size].type;
+                if (cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "\nInvalid input";
+                    continue;
+                }
+                else
+                    break;
+            }
+        }
+        else if (choice == 'd' || choice == 'D')  //edit date
+        {
+            while (true)
+            {
+                cout << "Enter new date of reservation (DD/MM/YYYY) Ex.: 02/03/2025";
+                getline(cin, Custs[constant].reservations[Custs[constant].size].date);
+                if (Custs[constant].reservations[Custs[constant].size].date[2] != '/' ||
+                    Custs[constant].reservations[Custs[constant].size].date[5] != '/')
+                {
+                    cout << "\ninvalid input";
+                    continue;
+                }
+                else
+                    break;
+            }
+        }
+
+        // leave this part right where it issss 
+        cout << endl << "Do you want to edit your more info ?      press Y for yes || N for no\n";  //repetition
+        char ans;
+    }while (ans == 'y' || ans == 'Y');
 }
 
 void login()
