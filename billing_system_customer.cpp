@@ -57,7 +57,7 @@ void billing_system_customer(Reservation res, float tax) {
 
     int totalFoodPrice = 0;
     // Displaying and calculating the total price of the current food using a for loop
-    for (int i = 0; i < res.F.size(); i++) {
+    for (int i = 0; i < res.F.size(); i++) { // Loop n times the number of the food array size
         cout << setw(7) << left << res.F[i].quantity // Display quantity
              << setw(30) << left << res.F[i].name // Display name
              << setw(10) << left << to_string(res.F[i].price * res.F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
@@ -66,7 +66,7 @@ void billing_system_customer(Reservation res, float tax) {
 
     int totalDrinksPrice = 0;
     // Displaying and calculating the total price of the current drink using a for loop
-    for (int j = 0; j < res.D.size(); j++) {
+    for (int j = 0; j < res.D.size(); j++) { // Loop n times the number of the drinks array size
         cout << setw(7) << left << res.D[j].quantity // Display quantity
              << setw(30) << left << res.D[j].name // Display name
              << setw(10) << left << to_string(res.D[j].price * res.D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
@@ -114,4 +114,17 @@ int main() {
     billing_system_customer(res, tax);
 
     return 0;
+
+    /* ----------NOTE----------
+    
+        res.F.push_back({ 0, "Kofta", 20, 2 });
+
+        heya heya
+
+        res.F[0].code = 0; -----------
+        res.F[0].name = "Kofta";     | ------> el fekra en bel taree2a di hdtar eni a7aded 3adad arrays mo3ayan lel food/drinks fel struct bta3 el Reservation
+        res.F[0].price = 20;         | ------> ya3ni fe struct el Reservation hnetar n3ml kda msalan: food F[10]; drinks D[10]; badal vector<food> F; vector<drinks> D;
+        res.F[0].quantity = 2; -------         ama el push_back msh bne7tag enena n7aded 3dad arrays mo3ayan
+    
+    */
 }
