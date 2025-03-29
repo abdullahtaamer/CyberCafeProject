@@ -2,243 +2,148 @@
 #include <string>
 #include <vector>
 #include <conio.h>
-#define light 3
-#define pastry 7
+
 using namespace std;
+
+
+
 int bill = 1;
 int constant;
-;
 
-struct food
-{
-    string name;
+struct food {
     int code;
-    int price;
-
-} f[13];
-
-struct drinks
-{
     string name;
-    int code;
-    int price;
-
-} d[15];
-
-struct soft_drinks
-{
-    string name;
-    int code;
     int price;
 };
-struct Reservation
-{
+
+struct drinks {
+    int code;
+    string name;
+    int price;
+};
+
+struct Reservation {
     string date;
     int billNumber;
     vector<food> F;
     vector<drinks> D;
     char type;
-    int time; // Duration
+    int time; //Duration
     float total;
 };
 
-struct customer
-{
+struct customer {
     long long ID;
     string password;
     string name;
     string phoneNumbers[3];
     vector<Reservation> reservations;
-    int size = sizeof(reservations) / sizeof(reservations[0]); // Total number of reservations of a specific customer
-};
-vector<customer> Custs;
-float cafeMenu(int, int);
+    int size = sizeof(reservations) / sizeof(reservations[0]); //Total number of reservations of a specific customer
+};vector <customer> Custs;
+customer un, pw, id, pn;
+
+
+void login()
+{
+    customer check;
+    check.ID = -1;
+    bool lamba = true;
+    while (lamba) {
+        cout << "please enter the following data:" << endl;
+        cout << "username:";
+        cin >> check.name;
+        cout << endl << "ID:";
+        cin >> check.ID;
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore( 1000,'\n');
+        }
+       
+        cout << endl << "password:";
+        cin >> check.password;
+        if (check.ID==-1|| check.ID > Custs.size())
+            cout << "invalid id"<<endl;
+        else {
+            if (check.name == Custs[check.ID - 1].name && check.password == Custs[check.ID - 1].password) {
+                cout << "you have logged in successfully!";
+                lamba = false;
+            }
+            else cout << "Wrong Credentials!";
+        }
+    }
+    
+}
+void registr()
+{
+    
+    customer newCustomer;
+    cout << "enter username: ";
+    cin >> newCustomer.name;
+    cout << endl << "enter password: ";
+    cin >> newCustomer.password;
+    //cout << endl << "enter phone number: ";
+    // Use index 0 instead of 3
+    //cin >> newCustomer.phoneNumbers[0];
+
+    // Assign ID as current size (assuming no deletions)
+    newCustomer.ID = Custs.size() + 1;
+    Custs.push_back(newCustomer);
+
+    cout << "your id is: " << newCustomer.ID << endl;
+
+}
+
+/*void forgot()
+{
+    int n;
+    cout << "forgot password or username?" << endl << "1.username" << endl << "2.password" << endl;
+    cin >> n;
+    if (n ==1)
+    {
+        cout << "new username:";
+        cin >> un.name;
+    }
+    else if (n == 2)
+    {
+        cout << "new password:";
+        cin >> pw.password;
+    }
+    else
+        cout << "error";
+
+}*/
+
+
+
+
 
 int main()
 {
-    // display the title first
-    cout << "\t\t\t\t\t\t The Cafe Menu\n"
-         << "\t\t\t\t\t\t" << endl;
+    int pick;
+    long long index = 0;
+    tany:
+    cout << "WELCOME" << endl << "1:login" << endl << "2:register" << endl << "3:forgot username or password" << endl << "4:exit" << endl;
+    cin >> pick;
 
-    int Nfood = 13, Ndrinks = 14;
-
-    food f[14] = {{"Cheese", 123, 30}, {"Smoked Turky", 222, 40}, {"Chicken", 144, 60}, {"Croissant", 555, 40}, {"Puff pastry", 333, 30}, {"Danish Pastry", 125, 60}, {"Cinnamon Roll", 111, 80}, {"Biscuits or Cookies", 226, 30}, {"Chips or Snacks", 771, 30}, {"Instant Noodless", 126, 40}, {"Mini Pizza", 199, 50}, {"Pan Cakes", 772, 40}, {"Light Burger", 334, 70}};
-    drinks d[15] = {{"Pepsi", 661, 20}, {"Cocacola", 557, 20}, {"Sprite", 993, 20}, {"Black Tea", 441, 20}, {"Green Tea", 777, 25}, {"Mint Tea", 116, 30}, {"Lemon Tea", 447, 30}, {"Espresso", 221, 40}, {"Amreicano", 551, 50}, {"Cappiccino", 141, 650}, {"Latte", 503, 50}, {"Orange Juice", 460, 30}, {"Mango Juice", 668, 40}, {"Strawberry Juice", 334, 40}, {"Bottelet Water", 445, 15}};
-    cafeMenu(Nfood, Ndrinks);
-}
-
-float cafeMenu(int Nf, int Nd)
-{
-    // for (int i = 0; i < Nf; i++)
-    //{
-    //     //Entring the database
-    //     cout << "Enter the product name: ";
-    //     getline(cin, f[i].name);
-    //     cout << "Enter the product code: ";
-    //     cin >> f[i].code;
-    //     cin.ignore();
-    //     cout << "Enter the product price: ";
-    //     cin >> f[i].price;
-    //     cin.ignore();
-    // }
-    ////Entring the database
-    // for (int i = 0; i < Nd; i++)
-    //{
-    //     cout << "Enter the product name: ";
-    //     getline(cin, d[i].name);
-    //     cout << "Enter the product code: ";
-    //     cin >> d[i].code;
-    //     cin.ignore();
-    //     cout << "Enter the product price: ";
-    //     cin >> d[i].price;
-    //     cin.ignore();
-    // }
-
-    int type, code, quantity;
-    float Totalcost = 0;
-    char ans;
-    // Step 1 on displaying the food menu
-    food f[14] = {{"Cheese", 123, 30}, {"Smoked Turky", 222, 40}, {"Chicken", 144, 60}, {"Croissant", 555, 40}, {"Puff pastry", 333, 30}, {"Danish Pastry", 125, 60}, {"Cinnamon Roll", 111, 80}, {"Biscuits or Cookies", 226, 30}, {"Chips or Snacks", 771, 30}, {"Instant Noodless", 126, 40}, {"Mini Pizza", 199, 50}, {"Pan Cakes", 772, 40}, {"Light Burger", 312, 70}};
-    drinks d[15] = {{"Pepsi", 661, 20}, {"Cocacola", 557, 20}, {"Sprite", 993, 20}, {"Black Tea", 441, 20}, {"Green Tea", 777, 25}, {"Mint Tea", 116, 30}, {"Lemon Tea", 447, 30}, {"Espresso", 221, 40}, {"Amreicano", 551, 50}, {"Cappiccino", 141, 650}, {"Latte", 503, 50}, {"Orange Juice", 460, 30}, {"Mango Juice", 668, 40}, {"Strawberry Juice", 334, 40}, {"Bottelet Water", 445, 15}};
-    while (true)
+    if (pick == 1)
     {
-        cout << " Food menu" << "\n"
-             << " *********" << endl;
-        cout << "For light sandwiches press 1" << endl;
-        cout << "For Pastry press 2" << endl;
-        cout << "For other options press 3" << endl;
-        cin >> type;
-        cin.ignore();
-        if (type == 1)
-        {
-            for (int i = 0; i < light; i++)
-            {
-                cout << endl
-                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
-            }
-        }
-        else if (type == 2)
-        {
-            for (int i = light; i < pastry; i++)
-            {
-                cout << endl
-                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
-            }
-        }
-        else
-        {
-            for (int i = 7; i < Nf; i++)
-            {
-                cout << endl
-                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
-            }
-        }
+         login();
 
-        cout << "\nWould you like to show another food category ?" << endl;
-        cout << " If yes enter y\n"
-             << " If no enter n\n";
-        cin >> ans;
-        if (ans == 'n' || ans == 'N')
-        {
-            break;
-        }
     }
-    while (true)
+    else if (pick == 2)
     {
-        cout << "\nDrinks menu" << "\n " << "************" << endl;
-        cout << "For Soft Drinks press 1" << endl;
-        cout << "For Tea press 2" << endl;
-        cout << "For Coffee press 3" << endl;
-        cout << "For Fresh Juices press 4" << endl;
-        cout << "For Botteled Water press 5" << endl;
-        cin >> type;
-        cin.ignore();
+       registr();
+       goto tany;
 
-        if (type == 1)
-        {
-            for (int i = 0; i < light; i++)
-            {
-                cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
-            }
-        }
-        else if (type == 2)
-        {
-            for (int i = 3; i < pastry; i++)
-            {
-                cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
-            }
-        }
-        else if (type == 3)
-        {
-            for (int i = pastry; i < 11; i++)
-            {
-                cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
-            }
-        }
-        else if (type == 4)
-        {
-            for (int i = 11; i < Nd; i++)
-            {
-                cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
-            }
-        }
-        else
-        {
-            for (int i = 14; i <= Nd; i++)
-            {
-                cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
-            }
-        }
-        cout << "\nWould you like to show another drink category ?" << endl;
-        cout << " If yes enter y\n"
-             << " If no enter n\n";
-        cin >> ans;
-        if (ans == 'n' || ans == 'N')
-        {
-            break;
-        }
     }
-
-    do
+    /*else if (pick == 3)
     {
-        cout << "Please Enter the code of the product you want: ";
-        cin >> code;
-        cin.ignore();
-        cout << endl;
-        cout << "Please Enter the quantity of this product you want: ";
-        cin >> quantity;
-        cin.ignore();
-        cout << endl;
-        for (int i = 0; i <= Nf + Nd; i++)
-        {
-            if (code == f[i].code)
-            {
-                Totalcost += (f[i].price * quantity);
-                break;
-            }
-            else if (code == d[i].code)
-            {
-                Totalcost += (d[i].price * quantity);
-                break;
-            }
-            else if (i == Nf + Nd && code != f[i].code && code != d[i].code)
-            {
-                cout << "Invalid code" << endl;
-            }
-        }
-        cout << "Would you like to add another product to your cart?" << endl;
-        cout << " If yes enter y\n"
-             << " If no enter n\n";
-        cin >> ans;
-        cin.ignore();
+         forgot();
+    }*/
+    else
+        cout << "thank you for visiting!";
 
-    } while (ans == 'y' || ans == 'Y');
-    cout << "Your Total cost is: " << Totalcost << endl;
-    cout << "Enjoy your meal!^_^" << endl;
-    return Totalcost;
+
+    return 0;
+
 }

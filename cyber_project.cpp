@@ -12,7 +12,7 @@ using namespace std;
 int bill = 0;
 int constant;
 int custCount = 0;
-long long ID = 0;
+long long ID = 1;
 int Nfood = 13, Ndrinks = 14;
 
 struct food
@@ -110,7 +110,7 @@ float cafeMenu(int Nf, int Nd)
 {
     // display the title first
     cout << "\t\t\t\t\t\t The Cafe Menu\n"
-    << "\t\t\t\t\t\t" << endl;
+         << "\t\t\t\t\t\t" << endl;
 
     int type, code;
     float Totalcost = 0;
@@ -121,7 +121,7 @@ float cafeMenu(int Nf, int Nd)
     while (true)
     {
         cout << " Food menu" << "\n"
-            << " *********" << endl;
+             << " *********" << endl;
         cout << "For light sandwiches press 1" << endl;
         cout << "For Pastry press 2" << endl;
         cout << "For other options press 3" << endl;
@@ -154,7 +154,7 @@ float cafeMenu(int Nf, int Nd)
 
         cout << "\nWould you like to show another food category ?" << endl;
         cout << " If yes enter y\n"
-            << " If no enter n\n";
+             << " If no enter n\n";
         cin >> ans;
         if (ans == 'n' || ans == 'N')
         {
@@ -214,7 +214,7 @@ float cafeMenu(int Nf, int Nd)
         }
         cout << "\nWould you like to show another drink category ?" << endl;
         cout << " If yes enter y\n"
-            << " If no enter n\n";
+             << " If no enter n\n";
         cin >> ans;
         if (ans == 'n' || ans == 'N')
         {
@@ -246,6 +246,7 @@ float cafeMenu(int Nf, int Nd)
                 cout << endl;
                 cout << "Please Enter the quantity of this product you want: ";
                 cin >> Custs[constant].reservations[Custs[constant].size].F[i].quantity;
+                Custs[constant].reservations[Custs[constant].size].foodOrderCount++;
                 break;
             }
             else if (code == d[i].code)
@@ -253,13 +254,19 @@ float cafeMenu(int Nf, int Nd)
                 Custs[constant].reservations[Custs[constant].size].D[i].code = d[i].code;
                 Custs[constant].reservations[Custs[constant].size].D[i].name = d[i].name;
                 Custs[constant].reservations[Custs[constant].size].D[i].price = d[i].price;
-
+                
                 cin.ignore();
                 cout << endl;
                 cout << "Please Enter the quantity of this product you want: ";
                 cin >> Custs[constant].reservations[Custs[constant].size].D[i].quantity;
+                Custs[constant].reservations[Custs[constant].size].drinksOrderCount++;
                 break;
             }
+            else
+            {
+                cout << "Invalid code, please try again." << endl;
+            }
+            
         }
 
         cin.ignore();
@@ -275,7 +282,7 @@ float cafeMenu(int Nf, int Nd)
         }
         cout << "Would you like to add another product to your cart?" << endl;
         cout << " If yes enter y\n"
-            << " If no enter n\n";
+             << " If no enter n\n";
         cin >> ans;
         cin.ignore();
 
@@ -286,43 +293,46 @@ float cafeMenu(int Nf, int Nd)
 }
 
 // --My function-- Billing System function for customers, takes a reservation from the user & the tax as parameters
-void billing_system_customer(Reservation res, float tax) {
+void billing_system_customer(Reservation res, float tax)
+{
     cout << "Hi there! Hope you had a great time with us. Here is your bill:" << "\n\n";
 
-    cout << setw(37) << left << "PlayStation for " + to_string(res.time) + " hours" // Time spent playing
-        << setw(10) << left << to_string(int(round(res.total))) + " EGP" << "\n\n"; // PlayStation rent price
+    cout << setw(37) << left << "PlayStation for " + to_string(res.time) + " hours"  // Time spent playing
+         << setw(10) << left << to_string(int(round(res.total))) + " EGP" << "\n\n"; // PlayStation rent price
 
     cout << "Food & Drinks:" << "\n\n";
-    cout << setw(7) << left << "QTY" // Quantity column header of the food/drink
-        << setw(30) << left << "Description" // Name column header of the food/drink
-        << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+    cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
+         << setw(30) << left << "Description"    // Name column header of the food/drink
+         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
 
     int totalFoodPrice = 0;
     // Displaying and calculating the total price of the current food using a for loop
-    for (int i = 0; i < res.foodOrderCount; i++) { // Loop n times the number of the f ordered
-        cout << setw(7) << left << res.F[i].quantity // Display quantity
-            << setw(30) << left << res.F[i].name // Display name
-            << setw(10) << left << to_string(res.F[i].price * res.F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
-        totalFoodPrice = totalFoodPrice + (res.F[i].price * res.F[i].quantity); // Add the current food price to the total price of f
+    for (int i = 0; i < res.foodOrderCount; i++)
+    {                                                                                               // Loop n times the number of the f ordered
+        cout << setw(7) << left << res.F[i].quantity                                                // Display quantity
+             << setw(30) << left << res.F[i].name                                                   // Display name
+             << setw(10) << left << to_string(res.F[i].price * res.F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
+        totalFoodPrice = totalFoodPrice + (res.F[i].price * res.F[i].quantity);                     // Add the current food price to the total price of f
     }
 
     int totalDrinksPrice = 0;
     // Displaying and calculating the total price of the current drink using a for loop
-    for (int j = 0; j < res.drinksOrderCount; j++) { // Loop n times the number of the drinks ordered
-        cout << setw(7) << left << res.D[j].quantity // Display quantity
-            << setw(30) << left << res.D[j].name // Display name
-            << setw(10) << left << to_string(res.D[j].price * res.D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
-        totalDrinksPrice = totalDrinksPrice + (res.D[j].price * res.D[j].quantity); // Add the current drink price to the total price of drinks
+    for (int j = 0; j < res.drinksOrderCount; j++)
+    {                                                                                               // Loop n times the number of the drinks ordered
+        cout << setw(7) << left << res.D[j].quantity                                                // Display quantity
+             << setw(30) << left << res.D[j].name                                                   // Display name
+             << setw(10) << left << to_string(res.D[j].price * res.D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+        totalDrinksPrice = totalDrinksPrice + (res.D[j].price * res.D[j].quantity);                 // Add the current drink price to the total price of drinks
     }
 
     float subtotal = res.total + totalFoodPrice + totalDrinksPrice; // Calculate subtotal
-    float total_price = subtotal + ((tax / 100) * subtotal); // Calculate total (subtotal + tax)
+    float total_price = subtotal + ((tax / 100) * subtotal);        // Calculate total (subtotal + tax)
 
     cout << "\n"
-        << setw(37) << left << "Subtotal"
-        << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+         << setw(37) << left << "Subtotal"
+         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
     cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
-        << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
 }
 
 void Reservations()
@@ -362,6 +372,7 @@ void Reservations()
     }
 }
 
+char ans;
 void editReservation()
 {
     do
@@ -411,7 +422,8 @@ void editReservation()
         // leave this part right where it issss
         cout << endl
              << "Do you want to edit your more info ?      press Y for yes || N for no\n"; // repetition
-        char ans;
+        cin >> ans;
+        cin.ignore();
     } while (ans == 'y' || ans == 'Y');
 }
 
@@ -423,11 +435,12 @@ int login()
     while (lamba)
     {
         cout << "please enter the following data:" << endl;
-        cout << "username:";
-        cin >> check.name;
+        cout << "Name:";
+        getline(cin, check.name);
         cout << endl
-             << "ID:";
+        << "ID:";
         cin >> check.ID;
+        cin.ignore();
         if (cin.fail())
         {
             cin.clear();
@@ -435,9 +448,9 @@ int login()
         }
 
         cout << endl
-            << "password:";
-        cin >> check.password;
-        if (check.ID == -1 || check.ID > Custs.size())
+             << "password:";
+        getline(cin, check.password);
+        if (check.ID == -1 || check.ID >custCount)
             cout << "invalid id" << endl;
         else
         {
@@ -457,28 +470,29 @@ void registr()
 {
     int nums;
     string reenter_Pass;
-    cout << "Please enter your information:" << endl;
-    cout << "Name:";
+    cout << "Please enter your information: " << endl;
+    cout << "Name: ";
     getline(cin, Custs[custCount].name);
-    cout << "How many phone numbers do you have?";
+    cout << "How many phone numbers do you have? ";
     cin >> nums;
+    cin.ignore(); 
     for (int i = 0; i < nums; i++)
     {
-        cout << "Phone number:";
+        cout << "Phone number: "<<endl;
         getline(cin, Custs[custCount].phoneNumbers[i]);
     }
 
     while (true)
     {
-        cout << "Please enter your password:";
+        cout << "Please enter your password: ";
         getline(cin, Custs[custCount].password);
-        cout << "Please re-enter your password:";
+        cout << "Please re-enter your password: ";
         getline(cin, reenter_Pass);
         if (Custs[custCount].password != reenter_Pass)
         {
             cout << endl
-                << "///Passwords don't match please double check it///" << endl
-                << endl;
+                 << "///Passwords don't match please double check it///" << endl
+                 << endl;
         }
         else
         {
@@ -486,10 +500,10 @@ void registr()
         }
     }
     cout << endl
-        << "Account created successfully!" << endl
-        << endl;
+         << "Account created successfully!" << endl
+         << endl;
     Custs[custCount].ID = ID;
     cout << "Your ID is " << ID++ << endl
-        << endl;
+         << endl;
     custCount++;
 }
