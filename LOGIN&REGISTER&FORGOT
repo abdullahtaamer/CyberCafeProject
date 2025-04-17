@@ -61,17 +61,30 @@ void login()
             goto tany2;
         }
         cout << "please enter the following data:" << endl;
+        stupid:
         cout << "username:";
         cin >> check.name;
+         if(cin.peek()==' '){
+            cout<<"5555555555555 eskndrany zoz 3amak w 3am 3eyalak"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto stupid;
+        }
         cout << endl << "ID:";
         cin >> check.ID;
         if (cin.fail()) {
             cin.clear();
             cin.ignore(1000, '\n');
         }
-
+stupid2:
         cout << endl << "password:";
         cin >> check.password;
+        if(cin.peek()==' '){
+            cout<<"5555555555555 eskndrany zoz 3amak w 3am 3eyalak"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto stupid2;
+        }
         if (i == 1) {
             if (check.ID == -1 || check.ID > Custsize)
                 cout << "invalid id" << endl;
