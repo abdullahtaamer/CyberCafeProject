@@ -6,7 +6,8 @@ using namespace std;
 
 int bill = 1;
 int constant;
-
+int Custsize=1;
+int worksize=1;
 struct food {
     int code;
     string name;
@@ -40,7 +41,7 @@ struct customer {
     security question;
     vector<Reservation> reservations;
     int size = sizeof(reservations) / sizeof(reservations[0]); //Total number of reservations of a specific customer
-};vector <customer> Custs,works;
+}; customer Custs[1000],works[1000];
 customer un, pw, id, pn;
 
 
@@ -72,25 +73,25 @@ void login()
         cout << endl << "password:";
         cin >> check.password;
         if (i == 1) {
-            if (check.ID == -1 || check.ID > Custs.size())
+            if (check.ID == -1 || check.ID > Custsize)
                 cout << "invalid id" << endl;
             else {
                 if (check.name == Custs[check.ID - 1].name && check.password == Custs[check.ID - 1].password) {
                     cout << "you have logged in successfully!";
                     lamba = false;
                 }
-                else cout << "Wrong Credentials!";
+                else cout << "Wrong Credentials!"<<endl;
             }
         }
         else if (i == 2) {
-            if (check.ID == -1 || check.ID > works.size())
+            if (check.ID == -1 || check.ID > worksize)
                 cout << "invalid id" << endl;
             else {
                 if (check.name == works[check.ID - 1].name && check.password == works[check.ID - 1].password) {
                     cout << "you have logged in successfully!";
                     lamba = false;
                 }
-                else cout << "Wrong Credentials!";
+                else cout << "Wrong Credentials!"<<endl;
             }
         }
     }
@@ -125,12 +126,13 @@ tany:
         }
         // Assign ID as current size (assuming no deletions)
         
-        newCustomer.ID = Custs.size() + 1;
-        Custs.push_back(newCustomer);
+        newCustomer.ID = Custsize;
+        Custs[newCustomer.ID-1]=newCustomer;
         Custs[newCustomer.ID-1].question.no = q;
         cout << "Answer Please"<<endl;
         cin >> Custs[newCustomer.ID-1].question.ans;
         cout << "your id is: " << newCustomer.ID << endl;
+          Custsize++;
     }
     else if (i == 2) {
         customer newWork;
@@ -151,13 +153,14 @@ tany:
         }
         
         // Assign ID as current size (assuming no deletions)
-        newWork.ID = works.size() + 1;
-        works.push_back(newWork);
+        newWork.ID = worksize;
+        works[newWork.ID-1]=newWork;
         works[newWork.ID-1].question.no = q;
         cout << "Answer Please"<<endl;
         cin >> works[newWork.ID-1].question.ans;
 
         cout << "your id is: " << newWork.ID << endl;
+            worksize++;
     }
 
 }
@@ -177,7 +180,7 @@ tany4:
     tany5:
     cout<<"Please Enter Your ID:"<<endl;
     cin>>check.ID;
-    if (check.ID == -1 || check.ID > Custs.size()){
+    if (check.ID == -1 || check.ID > Custsize){
                 cout << "invalid id" << endl;
                 goto tany5;}
         if(Custs[check.ID-1].question.no==1){
@@ -204,7 +207,7 @@ tany4:
                     tany6:
     cout<<"Please Enter Your ID:"<<endl;
     cin>>check.ID;
-    if (check.ID == -1 || check.ID > works.size()){
+    if (check.ID == -1 || check.ID > worksize){
                 cout << "invalid id" << endl;
                 goto tany6;}
                 if(works[check.ID-1].question.no==1){
