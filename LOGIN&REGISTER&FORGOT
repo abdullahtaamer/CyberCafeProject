@@ -107,12 +107,25 @@ tany:
         cin.ignore(1000, '\n');
         goto tany;
     }
-    if (i == 1) {
+    if (i == 1) {ghaby:
         customer newCustomer;
         cout << "enter username: ";
         cin >> newCustomer.name;
+        if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby;
+        }
+                ghaby3:
         cout << endl << "enter password: ";
         cin >> newCustomer.password;
+        if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby3;
+        }
         //cout << endl << "enter phone number: ";
         // Use index 0 instead of 3
         //cin >> newCustomer.phoneNumbers[0];
@@ -129,17 +142,36 @@ tany:
         newCustomer.ID = Custsize;
         Custs[newCustomer.ID-1]=newCustomer;
         Custs[newCustomer.ID-1].question.no = q;
+        ghaby6:
         cout << "Answer Please"<<endl;
         cin >> Custs[newCustomer.ID-1].question.ans;
+        if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby6;
+        }
         cout << "your id is: " << newCustomer.ID << endl;
           Custsize++;
     }
-    else if (i == 2) {
+    else if (i == 2) {ghaby2:
         customer newWork;
         cout << "enter username: ";
         cin >> newWork.name;
+        if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby2;
+        }ghaby4:
         cout << endl << "enter password: ";
         cin >> newWork.password;
+        if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby4;
+        }
         //cout << endl << "enter phone number: ";
         // Use index 0 instead of 3
         //cin >> newCustomer.phoneNumbers[0];
@@ -156,9 +188,15 @@ tany:
         newWork.ID = worksize;
         works[newWork.ID-1]=newWork;
         works[newWork.ID-1].question.no = q;
+        ghaby5:
         cout << "Answer Please"<<endl;
         cin >> works[newWork.ID-1].question.ans;
-
+if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby5;
+        }
         cout << "your id is: " << newWork.ID << endl;
             worksize++;
     }
@@ -195,8 +233,15 @@ tany4:
         cout << "Answer Please"<<endl;
         cin>>check.question.ans;
         if(check.question.ans==Custs[check.ID-1].question.ans){
+            ghaby8:
             cout<<"Write New Password!"<<endl;
             cin>>Custs[check.ID-1].password;
+            if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby8;
+        }
         }
         else {
         cout<<"invalid answer please try again"<<endl;
@@ -222,8 +267,15 @@ tany4:
         cout << "Answer Please"<<endl;
         cin>>check.question.ans;
         if(check.question.ans==works[check.ID-1].question.ans){
+            ghaby7:
             cout<<"Write New Password!"<<endl;
             cin>>works[check.ID-1].password;
+            if(cin.peek()==' '){
+            cout<<"555555555 7atet spaces leh y3m"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto ghaby7;
+        }
         }
         else {
         cout<<"invalid answer please try again"<<endl;
