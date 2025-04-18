@@ -6,15 +6,21 @@
 #include <bits/stdc++.h>
 #define light 3
 #define pastry 7
-#define foodCount 40  // max number of food in one reservation
-#define drinkCount 40 // max number of drink in one reservation
-#define resCount 40   // max number of reservations for one customer
+#define foodCount 40     // Max number of food in one reservation
+#define drinkCount 40    // Max number of drink in one reservation
+#define resCount 40      // Max number of reservations for one customer
+#define customers_num 40 // Number of customers we can have
+#define workers_num 40 // Number of workers we can have
 using namespace std;
 int bill = 0;
 int constant;
-int custCount = 0; // Lw la'etha b ay rakam gher 0 khaliha 0
+int custCount = 0;        // Lw la'etha b ay rakam gher 0 khaliha 0
+int workCount = 0;        // Lw la'etha b ay rakam gher 0 khaliha 0
+int reserved_devices = 0; // Number of reserved devices in a single period
 long long ID = 1;
-const int Nfood = 13, Ndrinks = 15;
+const int Nfood = 13, Ndrinks = 15, available_Devices = 10;
+int Custsize = 1; // Ziad hatetha
+int worksize = 1; // Ziad hatetha
 
 struct food
 {
@@ -46,7 +52,11 @@ struct Reservation
     int game;     // //F = Fifa 25 , M = Mortal kombat ("Eb'o zawedo games 3shan malish fi el gaming")
     string clock; // from char : 5 to char : 10
 };
-
+struct security
+{
+    int no;
+    string ans;
+};
 struct customer
 {
     long long ID;
@@ -54,8 +64,9 @@ struct customer
     string name;
     string phoneNumbers[3];
     Reservation reservations[resCount]; // Array of reservations for each customer
-    int res = 0;                        // Total number of reservations of a specific customer
-} Custs[40];
+    security question;
+    int res = 0; // Total number of reservations of a specific customer
+} Custs[customers_num], works[workers_num];
 
 food f[Nfood] = {{"Cheese", 123, 30}, {"Smoked Turky", 222, 40}, {"Chicken", 144, 60}, {"Croissant", 555, 40}, {"Puff pastry", 333, 30}, {"Danish Pastry", 125, 60}, {"Cinnamon Roll", 111, 80}, {"Biscuits or Cookies", 226, 30}, {"Chips or Snacks", 771, 30}, {"Instant Noodless", 126, 40}, {"Mini Pizza", 199, 50}, {"Pan Cakes", 772, 40}, {"Light Burger", 312, 70}};
 drinks d[Ndrinks] = {{"Pepsi", 661, 20}, {"Cocacola", 557, 20}, {"Sprite", 993, 20}, {"Black Tea", 441, 20}, {"Green Tea", 777, 25}, {"Mint Tea", 116, 30}, {"Lemon Tea", 447, 30}, {"Espresso", 221, 40}, {"Amreicano", 551, 50}, {"Cappiccino", 141, 650}, {"Latte", 503, 50}, {"Orange Juice", 460, 30}, {"Mango Juice", 668, 40}, {"Strawberry Juice", 334, 40}, {"Bottelet Water", 445, 15}};
@@ -66,6 +77,7 @@ void Reservations();
 void editReservation();
 int login();
 void registr();
+void forgot();
 
 int main()
 {
@@ -408,8 +420,6 @@ void Reservations()
     {
         char snacks;
         cout << "\nWelcome at our reservation page :)\n";
-        while (true)
-        {
             cout << "\nPlease press M for Multiplayer or S for Single   ";
             cin.get(Custs[constant].reservations[Custs[constant].res].type);
             if (cin.fail() ||
@@ -423,8 +433,17 @@ void Reservations()
                 cout << "\nInvalid input\n";
                 continue;
             }
-            cout << "What game are you going to play ?  ";
+        GameChoice:
+            cout << "What game are you going to play ? (1 = Fifa, 2 = PES, 3 = Mortal Kombat, 4 = Fortnite) ";
             cin >> Custs[constant].reservations[Custs[constant].res].game;
+            if(cin.fail())
+            {
+                cout<<"Invalid input"<<endl;
+                cin.clear();
+                cin.ignore(1000,'\n');
+                goto GameChoice;
+            }
+        Duration:  
             cout << "How much time will you stay (NOTE: We only deal with hours so it's currently unavailable to reserve 30 mins, 15 min, etc )   ";
             cin >> Custs[constant].reservations[Custs[constant].res].time;
             if (cin.fail())
@@ -432,11 +451,8 @@ void Reservations()
                 cin.clear();
                 cin.ignore(1000, '\n');
                 cout << "\nInvalid input\n";
-                continue;
+                goto Duration;
             }
-            else
-                break;
-        }
         cout << "Press Y if you need any snacks (If not press any button)  ";
         cin.ignore();
         cin.get(snacks);
@@ -450,38 +466,64 @@ void Reservations()
         }
         if (snacks == 'Y' || snacks == 'y')
             cafeMenu(Nfood, Ndrinks);
-        int x;
-        while (true)
-        {
+        int startTime, endTime;
+    DateAndTime:
             cout << "Enter date of reservation (DD/MM/YYYY) Ex.: 02/03/2025\n";
             getline(cin, Custs[constant].reservations[Custs[constant].res].date);
             if (Custs[constant].reservations[Custs[constant].res].date[2] != '/' ||
-                Custs[constant].reservations[Custs[constant].res].date[5] != '/')
+                Custs[constant].reservations[Custs[constant].res].date[5] != '/') // Date validation
             {
-                cout << "\n<<invalid input>>\n\n";
-                continue;
+                cout << "\n<<Invalid input>>\n\n";
+                goto DateAndTime;
             }
-            cout << "Enter the start time of the reservation in the following form ( hh:mm ) " << endl;
+            bool date_exists;
+            for (int i = 0; i < customers_num; i++)
+            {
+                for (int j = 0; j < resCount; j++)
+                {
+                    if (Custs[constant].reservations[Custs[constant].res].date == Custs[i].reservations[j].date)
+                    {
+                        date_exists = true;
+                    }
+                }
+            }
+
+            cout << "Enter the start time of the reservation in the following form ( hh:00 ) " << endl;
 
             getline(cin, Custs[constant].reservations[Custs[constant].res].clock);
             if (Custs[constant].reservations[Custs[constant].res].clock[2] != ':' ||
                 (Custs[constant].reservations[Custs[constant].res].clock[0] != '0' &&
-                 Custs[constant].reservations[Custs[constant].res].clock[0] != '1'))
+                 Custs[constant].reservations[Custs[constant].res].clock[0] != '1')) // Time validation
             {
-                cout << "\n\nInvalid code\n\n";
-                continue;
+                cout << "\n\nInvalid input\n\n";
+                goto DateAndTime;
             }
-            x = stoi(Custs[constant].reservations[Custs[constant].res].clock.substr(0, 2)) + Custs[constant].reservations[Custs[constant].res].time;
-            break;
-        }
+            startTime = stoi(Custs[constant].reservations[Custs[constant].res].clock.substr(0, 2));
+            endTime = startTime + Custs[constant].reservations[Custs[constant].res].time;
+            bool time_exists;
+            for (int i = 0; i < customers_num; i++)
+            {
+                for (int j = 0; j < resCount; j++)
+                {
+                    if (Custs[constant].reservations[Custs[constant].res].clock == Custs[i].reservations[j].clock)
+                    {
+                        time_exists = true;
+                    }
+                }
+            }
+            if (date_exists && time_exists)
+            {
+                reserved_devices++;
+            }
+
         Custs[constant].reservations[Custs[constant].res].billNumber = bill++;
+        cout << "\nYour reservation has been made successfully!\n\n";
         cout << "\nYour reservation number is: " << Custs[constant].reservations[Custs[constant].res].billNumber << endl;
-        Custs[constant].res++;
-        cout << "\nYour reservation has been made successfully!\n\n"
-             << "Date : "
-             << Custs[constant].reservations[Custs[constant].res].date << endl
-             << "Time : From" << Custs[constant].reservations[Custs[constant].res].clock << " to " << x << endl
+        cout << "Date : "
+             << Custs[constant].reservations[Custs[constant].res].date << endl;
+        cout << "Time : From " << Custs[constant].reservations[Custs[constant].res].clock << " to " << endTime << ":00" << endl
              << endl;
+        Custs[constant].res++;
         break;
     }
 }
@@ -556,83 +598,357 @@ void editReservation()
 
 int login()
 {
+    int i;
     customer check;
     check.ID = -1;
     bool lamba = true;
-    while (lamba)
-    {
-        cout << "please enter the following data:" << endl;
-        cout << "Name:";
-        getline(cin, check.name);
-        cout << endl
-             << "ID:";
-        cin >> check.ID;
-        cin.ignore();
-        if (cin.fail())
-        {
+    while (lamba) {
+    tany2:
+        cout << "Who are you?" << endl << "Customer = 1 , Worker = 2" << endl;
+        cin >> i;
+        if ((i != 1 && i != 2) || cin.fail()) {
             cin.clear();
             cin.ignore(1000, '\n');
-            cout << "Please enter a valid ID" << endl;
-            continue;
+            goto tany2;
         }
-
-        cout << endl
-             << "password:";
-        getline(cin, check.password);
-        if (check.ID <= 0 || check.ID > custCount)
-            cout << "invalid id" << endl;
-        else
-        {
-            if (check.name == Custs[check.ID - 1].name && check.password == Custs[check.ID - 1].password)
-            {
-                cout << "you have logged in successfully!";
-                lamba = false;
-                constant = check.ID - 1;
+        cout << "Please enter the following data:" << endl;
+        stupid:
+        cout << "username:";
+        cin >> check.name;
+         if(cin.peek()==' '){
+            cout<<"Your username can't contain spaces"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto stupid;
+        }
+        cout << endl << "ID:";
+        cin >> check.ID;
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+        }
+stupid2:
+        cout << endl << "password:";
+        cin >> check.password;
+        if(cin.peek()==' '){
+            cout<<"Your password can't contain spaces"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto stupid2;
+        }
+        if (i == 1) {
+            if (check.ID == -1 || check.ID > Custsize)
+                cout << "\nInvalid id" << endl;
+            else {
+                if (check.name == Custs[check.ID - 1].name && check.password == Custs[check.ID - 1].password) {
+                    cout << "You have logged in successfully!";
+                    lamba = false;
+                }
+                else cout << "\nWrong Credentials!"<<endl;
             }
-            else
-                cout << "\nWrong Credentials!";
+        }
+        else if (i == 2) {
+            if (check.ID == -1 || check.ID > worksize)
+                cout << "Invalid id" << endl;
+            else {
+                if (check.name == works[check.ID - 1].name && check.password == works[check.ID - 1].password) {
+                    cout << "You have logged in successfully!";
+                    lamba = false;
+                    constant = check.ID - 1;
+                }
+                else cout << "Wrong Credentials!"<<endl;
+            }
         }
     }
     return constant;
 }
 void registr()
 {
-    int nums;
-    string reenter_Pass;
+    int i; // Customer or worker 
+    int nums; // Number of phone numbers
+    string reenter_Pass; // Let the user reenter his password to check it.
+    CustWork:
+    cout << "Who are you?" << endl << "Press 1 for Customer and 2 for worker. ";
+    cin >> i;
+    if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid input\n" << endl;
+            goto CustWork;
+        }
+if (i==1)
+{
     cout << "Please enter your information: " << endl;
-    cout << "Name: ";
-    getline(cin, Custs[custCount].name);
+    
+    Username:
+    cout << "Username: ";
+    cin >> Custs[custCount].name;
+    if(cin.peek()==' '){
+        cout<<"Your username can't include spaces"<<endl;
+        cin.clear();
+        cin.ignore(1000,'\n');
+        goto Username;
+    }
+    phoning:
     cout << "How many phone numbers do you have? ";
     cin >> nums;
-    cin.ignore();
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Please enter a valid number" << endl;
+        goto phoning;
+    }
     for (int i = 0; i < nums; i++)
     {
+        PhoneNumbering:
         cout << "Phone number: " << endl;
-        getline(cin, Custs[custCount].phoneNumbers[i]);
+        cin >> Custs[custCount].phoneNumbers[i];
+        if(cin.peek()==' '){
+            cout<<"Your phone number can't include spaces"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto PhoneNumbering;
+        }
     }
-
-    while (true)
+    PasswordMaking:
+    cout << "Please enter your password: ";
+    cin >> Custs[custCount].password;
+    if(cin.peek()==' '){
+        cout<<"Your password can't include spaces"<<endl;
+        cin.clear();
+        cin.ignore(1000,'\n');
+        goto PasswordMaking;
+    }
+    cout << "Please re-enter your password: ";
+    cin >> reenter_Pass;
+    if (Custs[custCount].password != reenter_Pass || cin.peek()==' ' )
     {
-        cout << "Please enter your password: ";
-        getline(cin, Custs[custCount].password);
-        cout << "Please re-enter your password: ";
-        getline(cin, reenter_Pass);
-        if (Custs[custCount].password != reenter_Pass)
+        cout << endl
+        << "///Passwords don't match please double check it///" << endl
+        << endl;
+        goto PasswordMaking;
+    }
+    Questions:
+    int q; // Which question does the user want
+    cout << "Choose a question (This question will be used when you reset your password)" << endl
+    << "What's your first Pet Name?=1" << endl
+    << "What's your first Love Name?=2" << endl
+    << "What's your fav Color?=3" << endl;
+    cin >> q;
+    if ((q != 1 && q != 2 && q != 3) || cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto Questions;
+    }
+    Custs[custCount].question.no = q;
+    Questions2:
+    cout << "Answer Please : " << endl;
+    cin >> Custs[custCount].question.ans;
+    if (cin.peek() == ' ')
+    {
+        cout << "Your answer can't include spaces." << endl;
+        cin.clear();
+        cin.ignore(1000, '\n');
+        goto Questions2;
+    }   
+}
+else
+{
+    cout << "Please enter your information: " << endl;
+    
+    Username2:
+    cout << "Username: ";
+    cin >> Custs[custCount].name;
+    if(cin.peek()==' '){
+        cout<<"Your username can't include spaces"<<endl;
+        cin.clear();
+        cin.ignore(1000,'\n');
+        goto Username2;
+    }
+    phoning2:
+    cout << "How many phone numbers do you have? ";
+    cin >> nums;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Please enter a valid number" << endl;
+        goto phoning2;
+    }
+    for (int i = 0; i < nums; i++)
+    {
+        PhoneNumbering2:
+        cout << "Phone number: " << endl;
+        cin >> Custs[custCount].phoneNumbers[i];
+        if(cin.peek()==' '){
+            cout<<"Your phone number can't include spaces"<<endl;
+            cin.clear();
+            cin.ignore(1000,'\n');
+            goto PhoneNumbering2;
+        }
+    }
+    PasswordMaking2:
+    cout << "Please enter your password: ";
+    cin >> Custs[custCount].password;
+    if(cin.peek()==' '){
+        cout<<"Your password can't include spaces"<<endl;
+        cin.clear();
+        cin.ignore(1000,'\n');
+        goto PasswordMaking2;
+    }
+    cout << "Please re-enter your password: ";
+    cin >> reenter_Pass;
+    if (Custs[custCount].password != reenter_Pass || cin.peek()==' ' )
+    {
+        cout << endl
+        << "///Passwords don't match please double check it///" << endl
+        << endl;
+        goto PasswordMaking2;
+    }
+    Questions222:
+    int q; // Which question does the user want
+    cout << "Choose a question (This question will be used when you reset your password)" << endl
+    << "What's your first Pet Name?=1" << endl
+    << "What's your first Love Name?=2" << endl
+    << "What's your fav Color?=3" << endl;
+    cin >> q;
+    if ((q != 1 && q != 2 && q != 3) || cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto Questions222;
+    }
+    Custs[custCount].question.no = q;
+    Questions22:
+    cout << "Answer Please : " << endl;
+    cin >> Custs[custCount].question.ans;
+    if (cin.peek() == ' ')
+    {
+        cout << "Your answer can't include spaces." << endl;
+        cin.clear();
+        cin.ignore(1000, '\n');
+        goto Questions22;
+    }   
+
+}
+    cout << endl
+    << "Account created successfully!" << endl
+    << endl;
+    Custs[custCount].ID = ID;
+    cout << "Your ID is " << ID++ << endl
+    << endl;
+    workCount++;
+}
+void forgot()
+{
+    int i; // Customer or Worker
+    customer check;
+    check.ID = -1;
+
+CustomerOrWorker:
+    cout << "Who are you?" << endl
+         << "Customer = 1 , Worker = 2" << endl;
+    cin >> i;
+    if ((i != 1 && i != 2) || cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto CustomerOrWorker;
+    }
+    if (i == 1)
+    {
+    IDcheck:
+        cout << "Please Enter Your ID:" << endl;
+        cin >> check.ID;
+        if (check.ID == -1 || check.ID > custCount + 1)
         {
-            cout << endl
-                 << "///Passwords don't match please double check it///" << endl
+            cout << "Invalid id" << endl;
+            goto IDcheck;
+        }
+    QuestionMaking:
+        if (Custs[check.ID - 1].question.no == 1)
+            cout << "What's your first Pet Name?" << endl;
+        else if (Custs[check.ID - 1].question.no == 2)
+            cout << "What's your first Love Name?" << endl;
+        else if (Custs[check.ID - 1].question.no == 3)
+            cout << "What's your favourite Color?" << endl;
+        cin >> check.question.ans;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your answer can't include spaces \n"
                  << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto QuestionMaking;
+        }
+        if (check.question.ans == Custs[check.ID - 1].question.ans)
+        {
+        AssignNewPassword:
+            cout << "Write New Password!" << endl;
+            cin >> Custs[check.ID - 1].password;
+            if (cin.peek() == ' ')
+            {
+                cout << "Your password can't include spaces" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                goto AssignNewPassword;
+            }
         }
         else
         {
-            break;
+            cout << "invalid answer please try again" << endl;
+            goto QuestionMaking;
         }
     }
-    cout << endl
-         << "Account created successfully!" << endl
-         << endl;
-    Custs[custCount].ID = ID;
-    cout << "Your ID is " << ID++ << endl
-         << endl;
-    custCount++;
+    else if (i == 2)
+    {
+    IDcheck2:
+        cout << "Please Enter Your ID:" << endl;
+        cin >> check.ID;
+        if (check.ID == -1 || check.ID > worksize)
+        {
+            cout << "invalid id" << endl;
+            goto IDcheck2;
+        }
+    QuestionMaking2:
+        if (works[check.ID - 1].question.no == 1)
+            cout << "What's your first Pet Name?" << endl;
+        else if (works[check.ID - 1].question.no == 2)
+            cout << "What's your first Love Name?" << endl;
+        else if (works[check.ID - 1].question.no == 3)
+            cout << "What's your favourite Color?" << endl;
+        cin >> check.question.ans;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your answer can't include spaces \n"
+                 << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto QuestionMaking2;
+        }
+        if (check.question.ans == works[check.ID - 1].question.ans)
+        {
+        AssignNewPassword2:
+            cout << "Write New Password!" << endl;
+            cin >> works[check.ID - 1].password;
+            if (cin.peek() == ' ')
+            {
+                cout << "Your password can't include spaces" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                goto AssignNewPassword2;
+            }
+        }
+        else
+        {
+            cout << "Invalid answer please try again" << endl;
+            goto QuestionMaking2;
+        }
+    }
 }
