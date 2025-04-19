@@ -139,6 +139,7 @@ int main()
     Reservations();
     // cout << "Billing for Reservation: " << Custs[constant].res - 1 << endl;
     billing_system_customer(Custs[constant].reservations[Custs[constant].res - 1], tax); // Call the billing system function with the reservation and tax
+    getTopEmployee(works, shiftIndex); // Call getTopEmployee with employees array (works[]) & the array index of the currently logged in employee
 
     return 0;
 }
