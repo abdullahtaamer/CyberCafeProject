@@ -5,7 +5,7 @@
             "name": "Run Console App",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/draft.exe",
+            "program": "${workspaceFolder}/uu.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

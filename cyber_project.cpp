@@ -12,11 +12,12 @@
 #define resCount 40      // Max number of reservations for one customer
 #define customers_num 40 // Number of customers we can have
 #define workers_num 40   // Number of workers we can have
+#define game_count 6     // sarahss
 using namespace std;
 int bill = 0;
 int constant;
 int custCount = 0;        // Lw la'etha b ay rakam gher 0 khaliha 0
-int workCount = 0;        // Lw la'etha b ay rakam gher 0 khaliha 0
+int workCount = 0;        // Lw la'etha b ay rakam gher 0 khaliha 0 
 int reserved_devices = 0; // Number of reserved devices in a single period
 long long ID = 1;
 const int Nfood = 13, Ndrinks = 15, available_Devices = 10;
@@ -88,6 +89,13 @@ struct customer
     employee emp;
 } Custs[customers_num], works[workers_num];
 
+struct game
+{
+    int game_tag;
+    int Mostfrequency;
+    string game_name;
+};
+game Final_most[game_count] = {{1, 0, "FIFA"}, {2, 0, "PES"}, {3, 0, "MORTAL KOMBAT"}, {4, 0, "GTA V"}, {5, 0, "COD"}, {6, 0, "FALL GUYS"}};
 food f[Nfood] = {{"Cheese", 123, 30}, {"Smoked Turky", 222, 40}, {"Chicken", 144, 60}, {"Croissant", 555, 40}, {"Puff pastry", 333, 30}, {"Danish Pastry", 125, 60}, {"Cinnamon Roll", 111, 80}, {"Biscuits or Cookies", 226, 30}, {"Chips or Snacks", 771, 30}, {"Instant Noodless", 126, 40}, {"Mini Pizza", 199, 50}, {"Pan Cakes", 772, 40}, {"Light Burger", 312, 70}};
 drinks d[Ndrinks] = {{"Pepsi", 661, 20}, {"Cocacola", 557, 20}, {"Sprite", 993, 20}, {"Black Tea", 441, 20}, {"Green Tea", 777, 25}, {"Mint Tea", 116, 30}, {"Lemon Tea", 447, 30}, {"Espresso", 221, 40}, {"Amreicano", 551, 50}, {"Cappiccino", 141, 650}, {"Latte", 503, 50}, {"Orange Juice", 460, 30}, {"Mango Juice", 668, 40}, {"Strawberry Juice", 334, 40}, {"Bottelet Water", 445, 15}};
 // vector<customer> Custs;  //tf is this bro ~sarah
@@ -102,6 +110,7 @@ void getTopEmployee(customer works[], int shiftIndex);
 void viewInformation();
 void viewInformationEmployee();
 void viewReservation();
+void mostPlayed();
 
 int main()
 {
@@ -129,7 +138,7 @@ Menu:
 LogedIn:
     if (loggedIn && i != 2)
     {
-        cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view your information Press 3\nTo log out Press 4\n";
+        cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view your information Press 3\nTo view your reservations Press 4\nTo log out Press 5\n";
         cin >> question;
         if (cin.fail())
         {
@@ -154,11 +163,17 @@ LogedIn:
             goto LogedIn;
         }
         else if (question == 4)
+        {
+            viewReservation();
+            goto LogedIn;
+        }
+
+        else if (question == 5)
             goto Menu;
     }
     else
     {
-        cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view the employee of the week/month/year press 3\nTo view your information Press 4\nTo view a customer's information Press 5\nTo log out Press 6\n";
+        cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view the employee of the week/month/year press 3\nTo view your information Press 4\nTo view a customer's information Press 5\nnTo view the most played games Press 6\nTo log out Press 7 \n";
         cin >> question;
         if (cin.fail())
         {
@@ -193,6 +208,12 @@ LogedIn:
             goto LogedIn;
         }
         else if (question == 6)
+        {
+            mostPlayed();
+            goto LogedIn;
+        }
+        
+        else if (question == 7)
             goto Menu;
     }
 
@@ -872,14 +893,21 @@ PasswordoVE:
         }
         else
             cout << "\nPassword changed successfully\n";
-        return;
     }
     else
-        return;
+    {
+        cout << "To view another customer's information Press Y\nTo go to the main menu Press any other button\n";
+        cin >> ask;
+        if (ask == 'y' || ask == 'Y')
+        {
+            goto TakingIDVE;
+        }
+    }
 }
 void viewReservation()
 {
     int billy; // Bill number
+    char ans;  // Checks if the user wants to view any other reservation
 Bill:
     cout << "Enter the bill number : ";
     cin >> billy;
@@ -908,7 +936,50 @@ Bill:
          << endl;
     cout << "Cafe orders :" << endl
          << endl;
-         
+
+    cout << setw(37) << left << "PlayStation for " + to_string(Custs[constant].reservations[billy].time) + " hours"  // Time spent playing
+         << setw(10) << left << to_string(int(round(Custs[constant].reservations[billy].total))) + " EGP" << "\n\n"; // PlayStation rent price
+
+    cout << "Food & Drinks:" << "\n\n";
+    cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
+         << setw(30) << left << "Description"    // Name column header of the food/drink
+         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+
+    int totalFoodPrice = 0;
+    // Displaying and calculating the total price of the current food using a for loop
+    for (int i = 0; i < Custs[constant].reservations[billy].foodOrderCount; i++)
+    {                                                                                                                                           // Loop n times the number of the foods ordered
+        cout << setw(7) << left << Custs[constant].reservations[billy].F[i].quantity                                                            // Display quantity
+             << setw(30) << left << Custs[constant].reservations[billy].F[i].name                                                               // Display name
+             << setw(10) << left << to_string(Custs[constant].reservations[billy].F[i].price * Custs[constant].reservations[billy].F[i].quantity) + " EGP" << "\n";             // Display and calculate price (food price * quantity)
+        totalFoodPrice = totalFoodPrice + (Custs[constant].reservations[billy].F[i].price * Custs[constant].reservations[billy].F[i].quantity); // Add the current food price to the total price of foods
+    }
+
+    int totalDrinksPrice = 0;
+    // Displaying and calculating the total price of the current drink using a for loop
+    for (int j = 0; j < Custs[constant].reservations[billy].drinksOrderCount; j++)
+    {                                                                                                                                                               // Loop n times the number of the drinks ordered
+        cout << setw(7) << left << Custs[constant].reservations[billy].D[j].quantity                                                                                // Display quantity
+             << setw(30) << left << Custs[constant].reservations[billy].D[j].name                                                                                   // Display name
+             << setw(10) << left << to_string(Custs[constant].reservations[billy].D[j].price * Custs[constant].reservations[billy].D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+        totalDrinksPrice = totalDrinksPrice + (Custs[constant].reservations[billy].D[j].price * Custs[constant].reservations[billy].D[j].quantity);                 // Add the current drink price to the total price of drinks
+    }
+
+    float subtotal = Custs[constant].reservations[billy].total + totalFoodPrice + totalDrinksPrice; // Calculate subtotal
+    float total_price = subtotal + ((tax / 100) * subtotal);        // Calculate total (subtotal + tax)
+
+    cout << "\n"
+         << setw(37) << left << "Subtotal"
+         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+    cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
+         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+
+    cout << "\n\nTo view any reservation Press Y\nTo go back press any other button\n";
+    cin >> ans;
+    if (ans == 'y' || ans == 'Y')
+    {
+        goto Bill;
+    }
 }
 char ans;
 void editReservation()
@@ -1110,12 +1181,14 @@ int login()
                 {
                     cout << "\nWrong Credentials!\n"
                          << endl;
-                    cout << "Forgot your password ? press Y if not press any other button\n";
+                    cout << "Forgot your password ? press Y To try again Press any other button\n";
                     cin >> pass;
                     if (pass == 'y' || pass == 'Y')
                     {
                         forgot();
                     }
+                    else
+                    goto stupid;
                 }
             }
         }
@@ -1194,7 +1267,30 @@ CustWork:
         }
     PasswordMaking:
         cout << "Please enter your password: ";
-        cin >> Custs[custCount].password;
+        string password1;
+    char ch55;
+    while (true)
+    {
+        ch55 = getch();
+        if (ch55 == '\r')
+        {
+            break;
+        }
+        if (ch55 == '\b')
+        {
+            password1.pop_back();
+            cout << "\b \b";
+        }
+        if (ch55 != '\b')
+        {
+            password1 += ch55;
+            cout << "*";
+        }
+    }
+    cout << endl;
+
+    password1 = Custs[custCount].password;
+
         if (cin.peek() == ' ')
         {
             cout << "Your password can't include spaces" << endl;
@@ -1203,7 +1299,30 @@ CustWork:
             goto PasswordMaking;
         }
         cout << "Please re-enter your password: ";
-        cin >> reenter_Pass;
+        
+        string password2;
+    char ch66;
+    while (true)
+    {
+        ch66 = getch();
+        if (ch66 == '\r')
+        {
+            break;
+        }
+        if (ch66 == '\b')
+        {
+            password1.pop_back();
+            cout << "\b \b";
+        }
+        if (ch66 != '\b')
+        {
+            password1 += ch66;
+            cout << "*";
+        }
+    }
+    cout << endl;
+    password2 = reenter_Pass;
+
         if (Custs[custCount].password != reenter_Pass || cin.peek() == ' ')
         {
             cout << endl
@@ -1440,6 +1559,75 @@ CustomerOrWorker:
         {
             cout << "Invalid answer please try again" << endl;
             goto QuestionMaking2;
+        }
+    }
+}
+void mostPlayed()
+{
+    // calculating the frequencies
+    int freq_arr[game_count] = {0};
+    for (int i = 0; i < customers_num; i++)
+    {
+        for (int j = 0; j < resCount; j++)
+        {
+            for (int k = 1; k <= game_count; k++)
+            {
+                if (Custs[i].reservations[j].game == k)
+                    freq_arr[k - 1]++;
+            }
+        }
+    }
+    // adding the frequencies to memory associate it w the games
+    for (int i = 0; i < game_count; i++)
+    {
+        Final_most[i].Mostfrequency = freq_arr[i];
+    }
+
+    // Replace duplicate numbers in freq_arr with 0, keeping one instance
+    for (int i = 0; i < game_count; i++)
+    {
+        for (int j = i + 1; j < game_count; j++)
+        {
+            if (freq_arr[i] == freq_arr[j] && freq_arr[i] != 0) // Check for duplicates
+            {
+                freq_arr[j] = 0; // Replace duplicate with 0, keeping the first instance
+            }
+        }
+    }
+    // sorting the frequencies
+    for (int i = 0; i < game_count - 1; i++)
+    {
+        for (int j = 0; j < game_count - i - 1; j++)
+        {
+            if (freq_arr[j] < freq_arr[j + 1]) // Sort in descending order
+            {
+                // Swap frequencies
+                int temp = freq_arr[j];
+                freq_arr[j] = freq_arr[j + 1];
+                freq_arr[j + 1] = temp;
+            }
+        }
+    }
+
+    cout << endl
+         << "The most played games are :\n";
+
+    for (int j = 0; j < 3; j++)
+    {
+        cout << j + 1;
+        if (j == 0)
+            cout << "st place : ";
+        else if (j == 1)
+            cout << "nd place :";
+        else if (j == 2)
+            cout << "rd place : ";
+        for (int i = 0; i < game_count; i++)
+        {
+            if (Final_most[i].Mostfrequency == freq_arr[j] && freq_arr[j] != 0)
+            {
+                cout << Final_most[i].game_name << "\n";
+                cout << "PLAYED " << Final_most[i].Mostfrequency << " TIMES\n";
+            }
         }
     }
 }
