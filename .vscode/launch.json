@@ -1,18 +1,19 @@
 {
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "Run Console App",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/uu.exe",
+            "program": "${workspaceFolder}/mhadesh-yeftah_da.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+            "miDebuggerPath": "D:/mingw64/bin/gdb.exe",
             "preLaunchTask": "build active file"
         }
     ]

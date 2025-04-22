@@ -55,7 +55,27 @@
         "ranges": "cpp",
         "stacktrace": "cpp",
         "regex": "cpp",
+<<<<<<< HEAD
         "iomanip": "cpp"
+=======
+        "cstring": "cpp",
+        "iomanip": "cpp",
+        "ios": "cpp",
+        "locale": "cpp",
+        "xfacet": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocbuf": "cpp",
+        "xlocinfo": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xmemory": "cpp",
+        "xstring": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp"
+>>>>>>> d4b63a38abfcdd9dab3c8442c2f322dc6727becd
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
