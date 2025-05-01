@@ -1362,6 +1362,9 @@ int login()
             while (true)
             {
                 ch88 = getch();
+                if (ch88 == '\b' && password3.empty()){
+                    continue;
+                }
                 if (ch88 == '\r')
                 {
                     break;
@@ -1497,6 +1500,9 @@ CustWork:
         while (true)
         {
             ch55 = getch();
+            if (ch55 == '\b' && password1.empty()){
+                continue;
+            }
             if (ch55 == '\r')
             {
                 break;
@@ -1511,6 +1517,7 @@ CustWork:
                 password1 += ch55;
                 cout << "*";
             }
+
         }
         cout << endl;
 
@@ -1530,6 +1537,9 @@ CustWork:
         while (true)
         {
             ch66 = getch();
+            if (ch66 == '\b' && password2.empty()){
+                continue;
+            }
             if (ch66 == '\r')
             {
                 break;
@@ -1544,6 +1554,7 @@ CustWork:
                 password2 += ch66;
                 cout << "*";
             }
+
         }
         cout << endl;
         reenter_Pass = password2;
@@ -1628,6 +1639,8 @@ CustWork:
         while (true)
         {
             ch99 = getch();
+            if (ch99 == '\b' && password4.empty())
+                continue;
             if (ch99 == '\r')
             {
                 break;
@@ -1660,6 +1673,8 @@ CustWork:
         while (true)
         {
             ch22 = getch();
+            if (ch22 == '\b' && password7.empty())
+                continue;
             if (ch22 == '\r')
             {
                 break;
@@ -1777,6 +1792,11 @@ CustomerOrWorker:
             while (true)
             {
                 ch00 = getch();
+                if (ch00 == '\b' && password5.empty()){
+                    continue;
+                }
+                if (ch00 == '\b' && password5.empty())
+                    continue;
                 if (ch00 == '\r')
                 {
                     break;
@@ -1849,6 +1869,8 @@ CustomerOrWorker:
             while (true)
             {
                 ch11 = getch();
+                if (ch11 == '\b' && password6.empty())
+                    continue;
                 if (ch11 == '\r')
                 {
                     break;
