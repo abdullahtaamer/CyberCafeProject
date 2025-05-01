@@ -52,7 +52,7 @@ start:
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    startNumber += substractednumber;
+                    startNumber -= substractednumber;
                     cout << startNumber << "  ";
                 }
                 cout << endl
