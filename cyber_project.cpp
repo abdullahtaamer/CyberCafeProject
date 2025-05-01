@@ -253,6 +253,7 @@ void Reservations()
 
 void editReservation()
 {
+    char ans = 'n';
     do
     {
         cout << "press H to edit time || T to edit type || D to edit date \n";
@@ -299,7 +300,7 @@ void editReservation()
 
         // leave this part right where it issss 
         cout << endl << "Do you want to edit your more info ?      press Y for yes || N for no\n";  //repetition
-        char ans;
+        cin >> ans;
     } while (ans == 'y' || ans == 'Y');
 }
 
