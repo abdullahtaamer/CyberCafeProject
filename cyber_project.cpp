@@ -1679,6 +1679,7 @@ stupid2:
     cout << endl
          << "password:";
 
+<<<<<<< HEAD
     string password3;
     char ch88;
     while (true)
@@ -1705,6 +1706,41 @@ stupid2:
     }
     cout << endl;
     check.password = password3;
+=======
+            string password3;
+            char ch88;
+            while (true)
+            {
+                ch88 = getch();
+                if (ch88 == '\b' && password3.empty()){
+                    continue;
+                }
+                if (ch88 == '\r')
+                {
+                    break;
+                }
+                if (ch88 == '\b')
+                {
+                    password3.pop_back();
+                    cout << "\b \b";
+                }
+                if (ch88 != '\b')
+                {
+                    password3 += ch88;
+                    cout << "*";
+                }
+            }
+            cout << endl;
+            check.password = password3;
+
+            if (cin.peek() == ' ')
+            {
+                cout << "Your password can't contain spaces" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                goto stupid2;
+            }
+>>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
     if (i == 1)
     {
         if (check.ID == -1 || check.ID > custCount)
@@ -1851,8 +1887,12 @@ CustWork:
         while (true)
         {
             ch55 = getch();
+<<<<<<< HEAD
             if (ch55 == '\b' && password1.empty())
             {
+=======
+            if (ch55 == '\b' && password1.empty()){
+>>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
                 continue;
             }
             if (ch55 == '\r')
@@ -1869,6 +1909,7 @@ CustWork:
                 password1 += ch55;
                 cout << "*";
             }
+
         }
         cout << endl;
 
@@ -1888,8 +1929,12 @@ CustWork:
         while (true)
         {
             ch66 = getch();
+<<<<<<< HEAD
             if (ch66 == '\b' && password2.empty())
             {
+=======
+            if (ch66 == '\b' && password2.empty()){
+>>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
                 continue;
             }
             if (ch66 == '\r')
@@ -1906,6 +1951,7 @@ CustWork:
                 password2 += ch66;
                 cout << "*";
             }
+
         }
         cout << endl;
         reenter_Pass = password2;
@@ -2147,8 +2193,12 @@ CustomerOrWorker:
             while (true)
             {
                 ch00 = getch();
+<<<<<<< HEAD
                 if (ch00 == '\b' && password5.empty())
                 {
+=======
+                if (ch00 == '\b' && password5.empty()){
+>>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
                     continue;
                 }
                 if (ch00 == '\b' && password5.empty())
