@@ -51,7 +51,10 @@ struct drinks
 
 struct Reservation
 {
-    string date; //
+    string date; 
+    char date[11];        
+    char StartTime[6];    
+    char EndTime[6];      
     int billNumber;
     int foodOrderCount;   // How many f the user had ordered
     int drinksOrderCount; // How many drinks the user had ordered
@@ -478,7 +481,7 @@ float cafeMenu(int Nf, int Nd)
                 found = true;
                 break;
             }
-            else if (i == Nfood + Ndrinks - 1 && !found) // w di kman ya abdo mtensash
+            else if (i == Nfood + Ndrinks - 1 && !found) // w di kman mtensash
             {
                 cout << "Invalid code, please try again.\n"
                      << endl;
@@ -835,8 +838,8 @@ DateAndTime:
     {
         for (int j = 0; j < resCount; j++)
         {
-            if (Custs[constant].reservations[Custs[constant].res].StartTime >= Custs[i].reservations[resCount].StartTime &&
-                Custs[constant].reservations[Custs[constant].res].StartTime < Custs[i].reservations[resCount].EndTime)
+            if (Custs[constant].reservations[Custs[constant].res].StartTime >= Custs[i].reservations[j].StartTime &&
+                Custs[constant].reservations[Custs[constant].res].StartTime < Custs[i].reservations[j].EndTime)
             {
                 time_exists = true;
             }
@@ -855,9 +858,16 @@ DateAndTime:
     cout << "Time : From " << Custs[constant].reservations[Custs[constant].res].clock << " to " << Custs[constant].reservations[Custs[constant].res].EndTime << ":00" << endl
          << endl;
     billingSystemCustomer(Custs[constant].reservations[Custs[constant].res], tax);
-    works[storeID].reservations[works[storeID].res] = Custs[constant].reservations[Custs[constant].res]; // Storing the reservation in the worker's data
+    if (shift)
+    {
+        works[storeID].reservations[works[storeID].res] = Custs[constant].reservations[Custs[constant].res]; // Storing the reservation in the worker's data
+        works[storeID].emp.weeklyEarnings += earnings;  // Add weekly earnings to the currently logged in employee (Should be stored in the database file)
+        works[storeID].emp.monthlyEarnings += earnings; // Add monthly earnings to the currently logged in employee (Should be stored in the database file)
+        works[storeID].emp.yearlyEarnings += earnings;  // Add yearly earnings to the currently logged in employee (Should be stored in the database file)
+        works[storeID].res++;
+
+    }
     Custs[constant].res++;
-    works[storeID].res++;
     constant = storeID;
 }
 void viewInformation()
