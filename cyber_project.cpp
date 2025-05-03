@@ -14,6 +14,8 @@
 #define customers_num 40 // Number of customers we can have
 #define workers_num 40   // Number of workers we can have
 #define game_count 6     // sarahss
+#define singlePrice 30   // Price of 1 hour for the type Singleplayer mode
+#define multiPrice 50    // Price of 1 hour for the type Multiplayer mode
 using namespace std;
 int bill = 0;
 int i;                    // = 1 if the user is a customer , = 2 if the user is a worker
@@ -391,7 +393,7 @@ float cafeMenu(int Nf, int Nd)
         }
         else
         {
-            for (int i = 14; i <= Nd; i++)
+            for (int i = 14; i < Nd; i++)
             {
                 cout << endl
                      << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
@@ -439,6 +441,7 @@ float cafeMenu(int Nf, int Nd)
         }
 
         int i = 0;
+        bool found = false;
         for (; i < Nfood + Ndrinks; i++) // Matensash tzabatha
         {
             if (code == f[i].code)
@@ -454,6 +457,7 @@ float cafeMenu(int Nf, int Nd)
                 cout << "Please Enter the quantity of this product you want: ";
                 cin >> Custs[constant].reservations[Custs[constant].res].F[j].quantity;
                 Custs[constant].reservations[Custs[constant].res].foodOrderCount++;
+                found = true;
                 j++;
                 break;
             }
@@ -471,9 +475,10 @@ float cafeMenu(int Nf, int Nd)
                 cin >> Custs[constant].reservations[Custs[constant].res].D[k].quantity;
                 Custs[constant].reservations[Custs[constant].res].drinksOrderCount++;
                 k++;
+                found = true;
                 break;
             }
-            else if (i == Nfood + Ndrinks && code != d[i].code && code != f[i].code) // w di kman ya abdo mtensash
+            else if (i == Nfood + Ndrinks - 1 && !found) // w di kman ya abdo mtensash
             {
                 cout << "Invalid code, please try again.\n"
                      << endl;
@@ -716,7 +721,7 @@ void Reservations()
     }
 
     cout << "\nWelcome at our reservation page :)\n";
-    TypeChoice:
+TypeChoice:
     cout << "\nPlease press M for Multiplayer or S for Single   ";
     cin >> Custs[constant].reservations[Custs[constant].res].type; // The user chooses the type of reservation
     if (cin.fail() ||
@@ -766,6 +771,12 @@ Duration:
         cout << "\nInvalid input\n\n";
         goto Duration;
     }
+
+    if (Custs[constant].reservations[Custs[constant].res].type == 's' || Custs[constant].reservations[Custs[constant].res].type == 'S') // Reservation price (Not cafe recipt and tax included)
+        Custs[constant].reservations[Custs[constant].res].total = singlePrice * Custs[constant].reservations[Custs[constant].res].time;
+    else
+        Custs[constant].reservations[Custs[constant].res].total = multiPrice * Custs[constant].reservations[Custs[constant].res].time;
+
 EnterCafe:
     cout << "Press Y if you need any snacks (If not press any button)  ";
     cin.ignore();
@@ -844,7 +855,9 @@ DateAndTime:
     cout << "Time : From " << Custs[constant].reservations[Custs[constant].res].clock << " to " << Custs[constant].reservations[Custs[constant].res].EndTime << ":00" << endl
          << endl;
     billingSystemCustomer(Custs[constant].reservations[Custs[constant].res], tax);
+    works[storeID].reservations[works[storeID].res] = Custs[constant].reservations[Custs[constant].res]; // Storing the reservation in the worker's data
     Custs[constant].res++;
+    works[storeID].res++;
     constant = storeID;
 }
 void viewInformation()
@@ -1492,7 +1505,7 @@ char ans;
 void editReservation()
 {
     int billy;
-    Billoo:
+Billoo:
     cout << "Enter the bill number : ";
     cin >> billy;
     if (cin.fail())
@@ -1679,7 +1692,6 @@ stupid2:
     cout << endl
          << "password:";
 
-<<<<<<< HEAD
     string password3;
     char ch88;
     while (true)
@@ -1706,41 +1718,6 @@ stupid2:
     }
     cout << endl;
     check.password = password3;
-=======
-            string password3;
-            char ch88;
-            while (true)
-            {
-                ch88 = getch();
-                if (ch88 == '\b' && password3.empty()){
-                    continue;
-                }
-                if (ch88 == '\r')
-                {
-                    break;
-                }
-                if (ch88 == '\b')
-                {
-                    password3.pop_back();
-                    cout << "\b \b";
-                }
-                if (ch88 != '\b')
-                {
-                    password3 += ch88;
-                    cout << "*";
-                }
-            }
-            cout << endl;
-            check.password = password3;
-
-            if (cin.peek() == ' ')
-            {
-                cout << "Your password can't contain spaces" << endl;
-                cin.clear();
-                cin.ignore(1000, '\n');
-                goto stupid2;
-            }
->>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
     if (i == 1)
     {
         if (check.ID == -1 || check.ID > custCount)
@@ -1887,12 +1864,8 @@ CustWork:
         while (true)
         {
             ch55 = getch();
-<<<<<<< HEAD
             if (ch55 == '\b' && password1.empty())
             {
-=======
-            if (ch55 == '\b' && password1.empty()){
->>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
                 continue;
             }
             if (ch55 == '\r')
@@ -1909,7 +1882,6 @@ CustWork:
                 password1 += ch55;
                 cout << "*";
             }
-
         }
         cout << endl;
 
@@ -1929,12 +1901,8 @@ CustWork:
         while (true)
         {
             ch66 = getch();
-<<<<<<< HEAD
             if (ch66 == '\b' && password2.empty())
             {
-=======
-            if (ch66 == '\b' && password2.empty()){
->>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
                 continue;
             }
             if (ch66 == '\r')
@@ -1951,7 +1919,6 @@ CustWork:
                 password2 += ch66;
                 cout << "*";
             }
-
         }
         cout << endl;
         reenter_Pass = password2;
@@ -1989,10 +1956,10 @@ CustWork:
             goto Questions2;
         }
         cout << endl
-        << "Account created successfully!" << endl
-        << endl;
+             << "Account created successfully!" << endl
+             << endl;
         cout << "Your ID is " << custCount << endl
-        << endl;
+             << endl;
         Custs[custCount].ID = custCount++;
     }
     else if (i == 2)
@@ -2127,10 +2094,10 @@ CustWork:
             goto Questions22;
         }
         cout << endl
-        << "Account created successfully!" << endl
-        << endl;
+             << "Account created successfully!" << endl
+             << endl;
         cout << "Your ID is " << workCount << endl
-        << endl;
+             << endl;
         works[workCount].ID = workCount++;
     }
     else
@@ -2193,12 +2160,8 @@ CustomerOrWorker:
             while (true)
             {
                 ch00 = getch();
-<<<<<<< HEAD
                 if (ch00 == '\b' && password5.empty())
                 {
-=======
-                if (ch00 == '\b' && password5.empty()){
->>>>>>> f5798d3ff81b9b52e565a87cf274bf26b54b213f
                     continue;
                 }
                 if (ch00 == '\b' && password5.empty())
