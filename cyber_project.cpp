@@ -2373,7 +2373,7 @@ void mostPlayed()
             if (Final_most[i].Mostfrequency == freq_arr[j] && freq_arr[j] != 0)
             {
                 cout << Final_most[i].game_name << "\n";
-                cout << "PLAYED " << Final_most[i].Mostfrequency << " TIMES\n";
+                cout << "PLAYEDD " << Final_most[i].Mostfrequency << " TIMES\n";
             }
         }
     }
