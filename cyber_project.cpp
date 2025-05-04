@@ -51,9 +51,10 @@ struct drinks
 
 struct Reservation
 {
-    string date; 
     char date[11];        
     char StartTime[6];    
+    int StartTimeint;
+    int EndTimeint;
     char EndTime[6];      
     int billNumber;
     int foodOrderCount;   // How many f the user had ordered
@@ -66,8 +67,6 @@ struct Reservation
     int game;
     string gameName; // (1 = Fifa, 2 = PES, 3 = Mortal Kombat, 4 = GTA V, 5 = COD, 6 = fall guys)
     string clock;    // from char : 5 to char : 10
-    int StartTime;
-    int EndTime;
 };
 
 struct security
@@ -795,14 +794,27 @@ EnterCafe:
     if (snacks == 'Y' || snacks == 'y')
         cafeMenu(Nfood, Ndrinks);
 DateAndTime:
-    cout << "Enter date of reservation (DD/MM/YYYY) Ex.: 02/03/2025\n";
-    getline(cin, Custs[constant].reservations[Custs[constant].res].date);
-    if (Custs[constant].reservations[Custs[constant].res].date[2] != '/' ||
-        Custs[constant].reservations[Custs[constant].res].date[5] != '/') // Date validation
+bool validDate = false;
+while (!validDate)
+{
+    cout << "Enter reservation date (dd/mm/yyyy): ";
+    cin >> Custs[constant].reservations[Custs[constant].res].date;
+
+    if (strlen(Custs[constant].reservations[Custs[constant].res].date) == 10 &&
+        isdigit(Custs[constant].reservations[Custs[constant].res].date[0]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[1]) &&
+        Custs[constant].reservations[Custs[constant].res].date[2] == '/' &&
+        isdigit(Custs[constant].reservations[Custs[constant].res].date[3]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[4]) &&
+        Custs[constant].reservations[Custs[constant].res].date[5] == '/' &&
+        isdigit(Custs[constant].reservations[Custs[constant].res].date[6]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[7]) &&
+        isdigit(Custs[constant].reservations[Custs[constant].res].date[8]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[9])) // Date validation
     {
-        cout << "\n<<Invalid input>>\n\n";
-        goto DateAndTime;
+        validDate = true;
     }
+    else
+    {
+        cout << "Invalid date format. Please use dd/mm/yyyy.\n";
+    }
+}
 
     bool date_exists = false; // Checks if the reservation is made in the same date of another reservation
     for (int i = 0; i < customers_num; i++)
@@ -818,21 +830,16 @@ DateAndTime:
 
     cout << "\nEnter the start time of the reservation in the following form ( hh:00 ) " << endl;
 
-    getline(cin, Custs[constant].reservations[Custs[constant].res].clock);
-    if (Custs[constant].reservations[Custs[constant].res].clock[2] != ':' ||
-        (Custs[constant].reservations[Custs[constant].res].clock[0] != '0' &&
-         Custs[constant].reservations[Custs[constant].res].clock[0] != '1')) // Time validation
+    cin >> Custs[constant].reservations[Custs[constant].res].StartTime;
+    if (Custs[constant].reservations[Custs[constant].res].StartTime[2] != ':' ||
+        (Custs[constant].reservations[Custs[constant].res].StartTime[0] != '0' &&
+         Custs[constant].reservations[Custs[constant].res].StartTime[0] != '1') || cin.peek() == ' ') // Time validation
     {
         cout << "\nInvalid input, try again\n\n";
         goto DateAndTime;
     }
-    Custs[constant].reservations[Custs[constant].res].StartTime = stoi(Custs[constant].reservations[Custs[constant].res].clock.substr(0, 2));                                                        // The start time of the reservation
-    Custs[constant].reservations[Custs[constant].res].EndTime = stoi(Custs[constant].reservations[Custs[constant].res].clock.substr(0, 2)) + Custs[constant].reservations[Custs[constant].res].time; // The end time of the reservation
-    if (Custs[constant].reservations[Custs[constant].res].EndTime > 12)
-    {
-        Custs[constant].reservations[Custs[constant].res].EndTime -= 12;
-    }
-
+    Custs[constant].reservations[Custs[constant].res].StartTimeint = stoi (Custs[constant].reservations[Custs[constant].res].StartTime);
+    Custs[constant].reservations[Custs[constant].res].EndTimeint = Custs[constant].reservations[Custs[constant].res].StartTimeint + Custs[constant].reservations[Custs[constant].res].time;
     bool time_exists = false; // Checks if the reservation is made in the same time of another reservation
     for (int i = 0; i < customers_num; i++)
     {
@@ -855,7 +862,7 @@ DateAndTime:
     cout << "\nYour reservation number is: " << Custs[constant].reservations[Custs[constant].res].billNumber << endl;
     cout << "Date : "
          << Custs[constant].reservations[Custs[constant].res].date << endl;
-    cout << "Time : From " << Custs[constant].reservations[Custs[constant].res].clock << " to " << Custs[constant].reservations[Custs[constant].res].EndTime << ":00" << endl
+    cout << "Time : From " << Custs[constant].reservations[Custs[constant].res].StartTime << " to " << Custs[constant].reservations[Custs[constant].res].EndTimeint << ":00" << endl
          << endl;
     billingSystemCustomer(Custs[constant].reservations[Custs[constant].res], tax);
     if (shift)
@@ -1586,14 +1593,30 @@ Billoo:
         {
         DateAndTime:
             cout << "Enter date of reservation (DD/MM/YYYY) Ex.: 02/03/2025\n";
-            getline(cin, Custs[constant].reservations[Custs[constant].res].date);
-            if (Custs[constant].reservations[Custs[constant].res].date[2] != '/' ||
-                Custs[constant].reservations[Custs[constant].res].date[5] != '/') // Date validation
+            bool validDate = false;
+            while (!validDate)
             {
-                cout << "\n<<Invalid input>>\n\n";
-                goto DateAndTime;
+                cout << "Enter reservation date (dd/mm/yyyy): ";
+                cin >> Custs[constant].reservations[Custs[constant].res].date;
+            
+                if (strlen(Custs[constant].reservations[Custs[constant].res].date) == 10 &&
+                    isdigit(Custs[constant].reservations[Custs[constant].res].date[0]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[1]) &&
+                    Custs[constant].reservations[Custs[constant].res].date[2] == '/' &&
+                    isdigit(Custs[constant].reservations[Custs[constant].res].date[3]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[4]) &&
+                    Custs[constant].reservations[Custs[constant].res].date[5] == '/' &&
+                    isdigit(Custs[constant].reservations[Custs[constant].res].date[6]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[7]) &&
+                    isdigit(Custs[constant].reservations[Custs[constant].res].date[8]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[9])) // Dte va;idation
+                {
+                    validDate = true;
+                }
+                else
+                {
+                    cout << "Invalid date format. Please use dd/mm/yyyy.\n";
+                }
             }
-
+            Custs[constant].reservations[Custs[constant].res].StartTimeint = stoi (Custs[constant].reservations[Custs[constant].res].StartTime);
+            Custs[constant].reservations[Custs[constant].res].EndTimeint = Custs[constant].reservations[Custs[constant].res].StartTimeint + Custs[constant].reservations[Custs[constant].res].time;
+            
             bool date_exists = false; // Checks if the reservation is made in the same date of another reservation
             for (int i = 0; i < customers_num; i++)
             {
@@ -1616,9 +1639,6 @@ Billoo:
                 cout << "\n\nInvalid input, try again\n\n";
                 goto DateAndTime;
             }
-            Custs[constant].reservations[Custs[constant].res].StartTime = stoi(Custs[constant].reservations[Custs[constant].res].clock.substr(0, 2));                                                        // The start time of the reservation
-            Custs[constant].reservations[Custs[constant].res].EndTime = stoi(Custs[constant].reservations[Custs[constant].res].clock.substr(0, 2)) + Custs[constant].reservations[Custs[constant].res].time; // The end time of the reservation
-
             bool time_exists = false; // Checks if the reservation is made in the same time of another reservation
             for (int i = 0; i < customers_num; i++)
             {
