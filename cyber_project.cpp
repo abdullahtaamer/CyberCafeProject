@@ -1247,7 +1247,7 @@ TakingIDVE:
         cout << Custs[IDD].phoneNumbers[i] << endl;
     }
 AskingVE:
-    cout << "To edit your password Press Y\nIf not Press any other button ";
+    cout << "To edit the password Press Y\nIf not Press any other button ";
     cin >> ask; // y
     if (cin.fail())
     {
@@ -1918,9 +1918,9 @@ CustWork:
         PhoneNumbering:
             cout << "Phone number: " << endl;
             cin >> Custs[custCount].phoneNumbers[i];
-            if (cin.peek() == ' ')
+            if (cin.peek() == ' ' || Custs[custCount].phoneNumbers[nums] < 1000000000 || Custs[custCount].phoneNumbers[nums] > 1999999999)
             {
-                cout << "Your phone number can't include spaces" << endl;
+                cout << "Your phone number is invalid" << endl;
                 cin.clear();
                 cin.ignore(1000, '\n');
                 goto PhoneNumbering;
