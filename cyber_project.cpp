@@ -1666,9 +1666,14 @@ Billoo:
             cout << "Enter the start time of the reservation in the following form ( hh:00 ) " << endl;
 
             cin >> Custs[constant].reservations[billy].StartTime;
-            if (Custs[constant].reservations[billy].clock[2] != ':' ||
-                (Custs[constant].reservations[billy].clock[0] != '0' &&
-                 Custs[constant].reservations[billy].clock[0] != '1')) // Time validation
+            if (Custs[constant].reservations[Custs[constant].res].StartTime[2] != ':' ||
+                (Custs[constant].reservations[Custs[constant].res].StartTime[0] != '0' &&
+                 Custs[constant].reservations[Custs[constant].res].StartTime[0] != '1') ||
+                 Custs[constant].reservations[Custs[constant].res].StartTime[0] > 57 ||
+                 Custs[constant].reservations[Custs[constant].res].StartTime[1] > 57 ||
+                 Custs[constant].reservations[Custs[constant].res].StartTime[3] > 57 ||
+                 Custs[constant].reservations[Custs[constant].res].StartTime[4] > 57 ||
+                 cin.peek() == ' ') // Time validation
             {
                 cout << "\n\nInvalid input, try again\n\n";
                 goto DateAndTime;
