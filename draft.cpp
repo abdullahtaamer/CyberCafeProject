@@ -1,1303 +1,2705 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <conio.h>
+#include <iomanip>
+#include <cmath>
+#include <cstring>
 #include <fstream>
-#include <limits>
+#include <ctime>
+#define light 3
+#define pastry 7
+#define foodCount 40     // Max number of food in one reservation
+#define drinkCount 40    // Max number of drink in one reservation
+#define resCount 40      // Max number of reservations for one customer
+#define customers_num 40 // Number of customers we can have
+#define workers_num 40   // Number of workers we can have
+#define game_count 6     // sarahss
+#define singlePrice 30   // Price of 1 hour for the type Singleplayer mode
+#define multiPrice 50    // Price of 1 hour for the type Multiplayer mode
 using namespace std;
+int bill = 0;
+int i;                    // = 1 if the user is a customer , = 2 if the user is a worker
+int constant;             // The used id during a process
+int custCount = 0;        // Lw la'etha b ay rakam gher 0 khaliha 0
+int workCount = 0;        // Lw la'etha b ay rakam gher 0 khaliha 0
+int reserved_devices = 0; // Number of reserved devices in a single period
+long long ID = 0;
+const int Nfood = 13, Ndrinks = 15, available_Devices = 10;
+float tax = 14;        // Tax of 14%
+bool loggedIn = false; // True if the user logged in successfully
+int Most_playedCount = 0;
+bool lamba = true;
+int storeID; // Used to store the id of the logged in user
 
-const int SIZE = 5, N = 10, Max_Exercise = 10, NUM_TRAINERS = 10; // review later N of clients will increase 
-
-struct Measurements {
-    float weight[SIZE];
-    float height[SIZE];
-    float bmi[SIZE];
-    int count = 0;    // Keep track of the number of measurements
+struct food
+{
+    string name;
+    int code;
+    int price;
+    int quantity;
 };
 
-struct Workout {
-    string workoutID, workoutName, exercises[SIZE];
-    int duration, exerciseCount = 0;
+struct drinks
+{
+    string name;
+    int code;
+    int price;
+    int quantity;
 };
 
-struct Client {
-    string clientId, cUsername, cPassword;
-    Workout workoutplans[SIZE];
-    float progresslogs[SIZE];
-    Measurements measure;
+struct Reservation
+{
+    char date[11];
+    char StartTime[6];
+    int StartTimeint;
+    int EndTimeint;
+    char EndTime[6];
+    int billNumber;
+    int foodOrderCount;   // How many f the user had ordered
+    int drinksOrderCount; // How many drinks the user had ordered
+    food F[foodCount];
+    drinks D[drinkCount];
+    char type; //
+    int time;  // Duration
+    float total;
+    int game;
+    string gameName; // (1 = Fifa, 2 = PES, 3 = Mortal Kombat, 4 = GTA V, 5 = COD, 6 = fall guys)
+    string clock;    // from char : 5 to char : 10
 };
 
-struct Trainer {
-    string TrainerID, tUsername, tPassword;
-    Client client[N];
+struct security
+{
+    int no;
+    string ans;
 };
 
-// Global arrays for Clients and Trainers
-Client clients[N * NUM_TRAINERS];
-Trainer trainers[N];
-int nextClientID = 1; // ID for clients
-int nextTrainerID = 101; // ID for trainers
-int clientCount = 0;
-int trainerCount = 0;
+// Struct for employee earnings
+struct employee
+{
+    bool shift; // True if an employee is logged in
+    float weeklyEarnings;
+    float monthlyEarnings;
+    float yearlyEarnings;
+};
 
-const string CLIENT_FILE = "clients.txt";
-const string TRAINER_FILE = "trainers.txt";
+struct customer
+{
+    long long ID;
+    string password;
+    string name;
+    int nums; // Number of phone numbers
+    string phoneNumbers[3];
+    Reservation reservations[resCount]; // Array of reservations for each customer
+    security question;
+    int res = 0; // Total number of reservations of a specific customer
 
-void mainMenu() {
-    cout << "1. Register as Client\n";
-    cout << "2. Register as Trainer\n";
-    cout << "3. Login\n";
-    cout << "0. Logout from our application\n";
+    employee emp;
+} Custs[customers_num], works[workers_num];
+
+struct game
+{
+    int game_tag;
+    int Mostfrequency;
+    string game_name;
+};
+game Final_most[game_count] = {{1, 0, "FIFA"}, {2, 0, "PES"}, {3, 0, "MORTAL KOMBAT"}, {4, 0, "GTA V"}, {5, 0, "COD"}, {6, 0, "FALL GUYS"}};
+food f[Nfood] = {{"Cheese", 123, 30, 0}, {"Smoked Turkey", 222, 40, 0}, {"Chicken", 144, 60, 0}, {"Croissant", 555, 40, 0}, {"Puff Pastry", 333, 30, 0}, {"Danish Pastry", 125, 60, 0}, {"Cinnamon Roll", 111, 80, 0}, {"Biscuits or Cookies", 226, 30, 0}, {"Chips or Snacks", 771, 30, 0}, {"Instant Noodles", 126, 40, 0}, {"Mini Pizza", 199, 50, 0}, {"Pan Cakes", 772, 40, 0}, {"Light Burger", 312, 70, 0}};
+drinks d[Ndrinks] = {{"Pepsi", 661, 20, 0}, {"Cocacola", 557, 20, 0}, {"Sprite", 993, 20, 0}, {"Black Tea", 441, 20, 0}, {"Green Tea", 777, 25, 0}, {"Mint Tea", 116, 30, 0}, {"Lemon Tea", 447, 30, 0}, {"Espresso", 221, 40, 0}, {"Amreicano", 551, 50, 0}, {"Cappiccino", 141, 650, 0}, {"Latte", 503, 50, 0}, {"Orange Juice", 460, 30, 0}, {"Mango Juice", 668, 40, 0}, {"Strawberry Juice", 334, 40, 0}, {"Bottelet Water", 445, 15, 0}};
+float cafeMenu(int, int);
+void billingSystemCustomer(Reservation res, float tax);
+void Reservations();
+void editReservation();
+int login();
+void registr();
+void forgot();
+void getTopEmployee(customer works[], int shiftIndex);
+void viewReservationsOfTheDay();
+void viewInformation();
+void viewInformationE();
+void viewInformationEmployee();
+void viewReservation();
+void mostPlayed();
+void viewReservationE();
+void write();
+void read();
+int main()
+{ read();
+    // cafeMenu(Nfood, Ndrinks); //m7dsh yfok el comment dahh aw ymsa7o ~Sarah .... Mtz3a'ish ~Abdullah
+    int question; //  What does the user want to do
+    cout << "Welcome to our paradise ::)\n\n";
+Menu:
+    cout << "\n\nTo log in Press 1\nTo create a new account Press 2\n";
+    cin >> question;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto Menu;
+    }
+    if (question == 1)
+    {
+        login();
+        void write();
+        if (!loggedIn)
+            goto Menu;
+    }
+    else if (question == 2)
+    {
+        registr();
+        void write();
+        goto Menu;
+    }
+    else
+    {
+        cout << "\nInvalid input\n\n";
+        goto Menu;
+    }
+LogedIn:
+    if (loggedIn && i != 2)
+    {
+        cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view your information Press 3\nTo view your reservations Press 4\nTo log out Press 5\n";
+        cin >> question;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            goto LogedIn;
+        }
+        if (question == 1)
+        {
+            Reservations();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 2)
+        {
+            editReservation();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 3)
+        {
+            viewInformation();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 4)
+        {
+            viewReservation();
+            cout << "\n\nDo you want to edit your reservation ?\npress Y if YES\nTo go back to main menu Press any other button\n";
+            char u1; // u is for answerrs
+            cin >> u1;
+            if (cin.fail()) // validation w yarab yb'a sa7 ~ Sarah ... ghlt tb3n ykhrebet elly 3alemek brmaga bs ana khlas zabataha ~Abdullah
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n\n";
+                goto LogedIn;
+            }
+            else if (u1 == 'y' || u1 == 'Y')
+            {editReservation();
+                    void write();}
+            else
+                goto LogedIn;
+        }
+
+        else if (question == 5)
+            goto Menu;
+        else
+        {
+            cout << "\nInvalid input\n\n";
+            goto LogedIn;
+        }
+    }
+    else
+    {
+        cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view the employee of the week/month/year press 3\nTo view your information Press 4\nTo view a customer's information Press 5\nTo view the most played games Press 6\nTo view reservations of the day Press 7\nTo view a reservation Press 8\nTo log out Press 9 \n";
+        cin >> question;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            goto LogedIn;
+        }
+        if (question == 1)
+        {
+            Reservations();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 2)
+        {
+            editReservation();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 3)
+        {
+            getTopEmployee(works, constant);
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 4)
+        {
+            viewInformationE();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 5)
+        {
+            viewInformationEmployee();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 6)
+        {
+            mostPlayed();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 7)
+        {
+            viewReservationsOfTheDay();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 8)
+        {
+            viewReservationE();
+            void write();
+            goto LogedIn;
+        }
+        else if (question == 9)
+            goto Menu;
+        else
+        {
+            cout << "\n\nInvalid input\n";
+            goto LogedIn;
+        }
+    }
+
+    // getTopEmployee(works, shiftIndex);  // Call getTopEmployee with employees array (works[]) & the array index of the currently logged in employee
+    return 0;
 }
 
-void readPassword(string& password, char& pass) {
-    password.clear();
-    do {
-        pass = _getch();
-        if (pass == 13) {
+float cafeMenu(int Nf, int Nd)
+{
+    // display the title first
+    cout << "\n\n\t\t\t\t\t\t The Cafe Menu\n"
+         << "\t\t\t\t\t\t" << endl;
+
+    int type, code;
+    float Totalcost = 0;
+    char ans;
+    // Step 1 on displaying the food menu
+    while (true)
+    {
+        cout << " Food menu" << "\n"
+             << " *********" << endl;
+        cout << "For light sandwiches press 1" << endl;
+        cout << "For Pastry press 2" << endl;
+        cout << "For other options press 3" << endl;
+        cin >> type;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            continue;
+        }
+        if (type == 1)
+        {
+            for (int i = 0; i < light; i++)
+            {
+                cout << endl
+                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
+            }
+        }
+        else if (type == 2)
+        {
+            for (int i = light; i < pastry; i++)
+            {
+                cout << endl
+                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
+            }
+        }
+        else if (type == 4)
+        {
+            for (int i = 7; i < Nf; i++)
+            {
+                cout << endl
+                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
+            }
+        }
+        else
+        {
+            cout << "\nInvalid input\n";
+            continue;
+        }
+        while (true)
+        {
+
+            cout << "\nWould you like to show another food category ?" << endl;
+            cout << " If yes enter y or anything except n\n"
+                 << " If no enter n\n";
+            cin.ignore();
+            cin >> ans;
+            if (cin.fail() || (ans != 'n' && ans != 'N' && ans != 'y' && ans != 'Y'))
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n\n";
+                continue;
+            }
+            else
+                break;
+        }
+        if (ans == 'n' || ans == 'N')
+        {
             break;
         }
-        else if (pass == 8) {
-            if (!password.empty()) {
-                password.pop_back();
+    }
+    while (true)
+    {
+        cout << endl
+        << "\nDrinks menu" << "\n " << "" << endl;
+        cout << "For Soft Drinks press 1" << endl;
+        cout << "For Tea press 2" << endl;
+        cout << "For Coffee press 3" << endl;
+        cout << "For Fresh Juices press 4" << endl;
+        cout << "For Botteled Water press 5" << endl;
+        cin >> type;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            continue;
+        }
+
+        if (type == 1)
+        {
+            for (int i = 0; i < light; i++)
+            {
+                cout << endl
+                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+            }
+        }
+        else if (type == 2)
+        {
+            for (int i = 3; i < pastry; i++)
+            {
+                cout << endl
+                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+            }
+        }
+        else if (type == 3)
+        {
+            for (int i = pastry; i < 11; i++)
+            {
+                cout << endl
+                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+            }
+        }
+        else if (type == 4)
+        {
+            for (int i = 11; i < Nd; i++)
+            {
+                cout << endl
+                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+            }
+        }
+        else if (type == 5)
+        {
+            for (int i = 14; i < Nd; i++)
+            {
+                cout << endl
+                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+            }
+        }
+        else 
+        {
+            cout << "\nInvalid input\n";
+            continue;
+        }
+        while (true)
+        {
+            cout << "\nWould you like to show another drink category ?" << endl;
+            cout << " If yes press y or any button\n"
+                 << " If no enter press n\n";
+            cin >> ans;
+            if (cin.fail() || (ans != 'n' && ans != 'N' && ans != 'y' && ans != 'Y'))
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n\n";
+                continue;
+            }
+            else
+                break;
+        }
+        if (ans == 'n' || ans == 'N')
+        {
+            break;
+        }
+    }
+    int j = 0;
+    int k = 0;
+    do
+    {
+        while (true)
+        {
+            cout << endl
+                 << "Please Enter the code of the product you want: ";
+            cin >> code;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n\n";
+                continue;
+            }
+            else
+                break;
+        }
+
+        int i = 0;
+        bool found = false;
+        for (; i < Nfood + Ndrinks; i++) // Matensash tzabatha
+        {
+            if (code == f[i].code)
+            {
+                Custs[constant].reservations[Custs[constant].res].F[j].code = f[i].code;
+                Custs[constant].reservations[Custs[constant].res].F[j].name = f[i].name;
+                Custs[constant].reservations[Custs[constant].res].F[j].price = f[i].price;
+                cout << "You ordered: " << f[i].name << endl;
+                cout << "Code: " << f[i].code << endl;
+                cout << "Price: " << f[i].price << "EGP" << endl;
+
+                cout << endl;
+                cout << "Please Enter the quantity of this product you want: ";
+                cin >> Custs[constant].reservations[Custs[constant].res].F[j].quantity;
+                Custs[constant].reservations[Custs[constant].res].foodOrderCount++;
+                found = true;
+                j++;
+                break;
+            }
+            else if (code == d[i].code)
+            {
+                Custs[constant].reservations[Custs[constant].res].D[k].code = d[i].code;
+                Custs[constant].reservations[Custs[constant].res].D[k].name = d[i].name;
+                Custs[constant].reservations[Custs[constant].res].D[k].price = d[i].price;
+                cout << "You ordered: " << d[i].name << endl;
+                cout << "Code: " << d[i].code << endl;
+                cout << "Price: " << d[i].price << "EGP" << endl;
+
+                cout << endl;
+                cout << "Please Enter the quantity of this product you want: ";
+                cin >> Custs[constant].reservations[Custs[constant].res].D[k].quantity;
+                Custs[constant].reservations[Custs[constant].res].drinksOrderCount++;
+                k++;
+                found = true;
+                break;
+            }
+            else if (i == Nfood + Ndrinks - 1 && !found) // w di kman mtensash
+            {
+                cout << "Invalid code, please try again.\n"
+                     << endl;
+            }
+        }
+        while (true)
+        {
+            cout << "\n\nWould you like to add another product to your cart?" << endl;
+            cout << " If yes enter y\n"
+                 << " If no enter n or anything except y\n";
+            cin.ignore();
+            cin.get(ans);
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n\n";
+                continue;
+            }
+            else
+                break;
+        }
+        cin.ignore();
+
+    } while (ans == 'y' || ans == 'Y');
+    // cout << "Your Total cost is: " << Totalcost << endl;
+    cout << "\n\nEnjoy your meal!^_^\n\n"
+         << endl;
+
+    return Totalcost;
+}
+
+// Some variables to get the employee of the week/month/year
+const int day_in_seconds = 24 * 60 * 60;
+time_t lastWeekReset = time(0);  // El wa2t el hybda2 fih el program w nbda2 n7seb el arba7 mn awl el osbo3 (Should be stored in the database file)
+time_t lastMonthReset = time(0); // El wa2t el hybda2 fih el program w nbda2 n7seb el arba7 mn awl el shahr (Should be stored in the database file)
+time_t lastYearReset = time(0);  // El wa2t el hybda2 fih el program w nbda2 n7seb el arba7 mn awl el sana (Should be stored in the database file)
+
+float earnings;            // This will store the price the user pays for later use in the getTopEmployee function
+bool shift = false;        // ********** Byb2a true lma ay employee y3ml login **********
+int shiftIndex = constant; // ********** El index bta3 el employee el 3amal login fel array bta3 el works (For example: works[5]) 3shan el earnings htedaf lel employee da **********
+
+int employeeOfWeekIndex;
+int employeeOfMonthIndex;
+int employeeOfYearIndex;
+
+// --Jimmy's function-- Billing System function for customers, takes a reservation from the user & the tax as parameters
+void billingSystemCustomer(Reservation res, float tax)
+{
+    cout << "Hi there! Hope you had a great time with us. Here is your bill:" << "\n\n";
+
+    cout << setw(37) << left << "PlayStation for " + to_string(res.time) + " hours"  // Time spent playing
+         << setw(10) << left << to_string(int(round(res.total))) + " EGP" << "\n\n"; // PlayStation rent price
+
+    cout << "Food & Drinks:" << "\n\n";
+    cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
+         << setw(30) << left << "Description"    // Name column header of the food/drink
+         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+
+    int totalFoodPrice = 0;
+    // Displaying and calculating the total price of the current food using a for loop
+    for (int i = 0; i < res.foodOrderCount; i++)
+    {                                                                                               // Loop n times the number of the foods ordered
+        cout << setw(7) << left << res.F[i].quantity                                                // Display quantity
+             << setw(30) << left << res.F[i].name                                                   // Display name
+             << setw(10) << left << to_string(res.F[i].price * res.F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
+        totalFoodPrice = totalFoodPrice + (res.F[i].price * res.F[i].quantity);                     // Add the current food price to the total price of foods
+    }
+
+    int totalDrinksPrice = 0;
+    // Displaying and calculating the total price of the current drink using a for loop
+    for (int j = 0; j < res.drinksOrderCount; j++)
+    {                                                                                               // Loop n times the number of the drinks ordered
+        cout << setw(7) << left << res.D[j].quantity                                                // Display quantity
+             << setw(30) << left << res.D[j].name                                                   // Display name
+             << setw(10) << left << to_string(res.D[j].price * res.D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+        totalDrinksPrice = totalDrinksPrice + (res.D[j].price * res.D[j].quantity);                 // Add the current drink price to the total price of drinks
+    }
+
+    float subtotal = res.total + totalFoodPrice + totalDrinksPrice; // Calculate subtotal
+    float total_price = subtotal + ((tax / 100) * subtotal);        // Calculate total (subtotal + tax)
+
+    cout << "\n"
+         << setw(37) << left << "Subtotal"
+         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+    cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
+         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+
+    earnings = total_price;
+}
+
+// --Jimmy's function-- Display employee of the week/month/year function, takes the employees array (works[]) & the array index of the currently logged in employee
+void getTopEmployee(customer works[], int shiftIndex)
+{
+    time_t currentTime = time(0); // Time in seconds since 1970 (El wa2t mn awl ma el function di yt3melaha run)
+
+    if (shift)
+    {
+        works[shiftIndex].emp.weeklyEarnings += earnings;  // Add weekly earnings to the currently logged in employee (Should be stored in the database file)
+        works[shiftIndex].emp.monthlyEarnings += earnings; // Add monthly earnings to the currently logged in employee (Should be stored in the database file)
+        works[shiftIndex].emp.yearlyEarnings += earnings;  // Add yearly earnings to the currently logged in employee (Should be stored in the database file)
+    }
+
+    float weeklyMax = works[0].emp.weeklyEarnings;
+    float monthlyMax = works[0].emp.monthlyEarnings;
+    float yearlyMax = works[0].emp.yearlyEarnings;
+    employeeOfWeekIndex = 0;
+    employeeOfMonthIndex = 0;
+    employeeOfYearIndex = 0;
+
+    for (int i = 0; i < workers_num; i++)
+    { // Loop over all employees
+        // Get employee of the week
+        if (works[i].emp.weeklyEarnings > weeklyMax)
+        { // Get the employee with the most earnings the past week by their index
+            weeklyMax = works[i].emp.weeklyEarnings;
+            employeeOfWeekIndex = i; // Save the employee's index
+        }
+
+        // Get employee of the month
+        if (works[i].emp.monthlyEarnings > monthlyMax)
+        { // Get the employee with the most earnings the past month by their index
+            monthlyMax = works[i].emp.monthlyEarnings;
+            employeeOfMonthIndex = i; // Save the employee's index
+        }
+
+        // Get employee of the year
+        if (works[i].emp.yearlyEarnings > yearlyMax)
+        { // Get the employee with the most earnings the past year by their index
+            yearlyMax = works[i].emp.yearlyEarnings;
+            employeeOfYearIndex = i; // Save the employee's index
+        }
+    }
+
+    cout << "Employee of the week: " << works[employeeOfWeekIndex].name << ", Earnings: " << weeklyMax << " EGP\n";    // Display employee of the week
+    cout << "Employee of the month: " << works[employeeOfMonthIndex].name << ", Earnings: " << monthlyMax << " EGP\n"; // Display employee of the month
+    cout << "Employee of the year: " << works[employeeOfYearIndex].name << ", Earnings: " << yearlyMax << " EGP\n";    // Display employee of the year
+
+    // Check if 7 days have passed to reset the earnings
+    if (difftime(currentTime, lastWeekReset) >= 7 * day_in_seconds)
+    { // Check hal el wa2t mn awl el osbo3 l7ad dlw2ti (in seconds) = 7 ayam (in seconds)?
+        for (int i = 0; i < workers_num; i++)
+        {                                    // Loop over all employees
+            works[i].emp.weeklyEarnings = 0; // Reset all of the employees earnings by the end of this week
+        }
+        lastWeekReset = currentTime; // Reset the current week to start calculting new earnings from employees and display the employee of the week
+    }
+
+    // Check if 30 days have passed to reset the earnings
+    if (difftime(currentTime, lastMonthReset) >= 30 * day_in_seconds)
+    { // Check hal el wa2t mn awl el shahr l7ad dlw2ti (in seconds) = 30 yom (in seconds)?
+        for (int i = 0; i < workers_num; i++)
+        {                                     // Loop over all employees
+            works[i].emp.monthlyEarnings = 0; // Reset all of the employees earnings by the end of this month
+        }
+        lastMonthReset = currentTime; // Reset the current month to start calculting new earnings from employees and display the employee of the month
+    }
+
+    // Check if 365 days have passed to reset the earnings
+    if (difftime(currentTime, lastYearReset) >= 365 * day_in_seconds)
+    { // Check hal el wa2t mn awl el sana l7ad dlw2ti (in seconds) = 365 yom (in seconds)?
+        for (int i = 0; i < workers_num; i++)
+        {                                    // Loop over all employees
+            works[i].emp.yearlyEarnings = 0; // Reset all of the employees earnings by the end of this year
+        }
+        lastYearReset = currentTime; // Reset the current year to start calculting new earnings from employees and display the employee of the year
+    }
+}
+
+// --Jimmy's function-- View all reservations made by users today, for employees
+void viewReservationsOfTheDay()
+{
+    time_t currentTime = time(0);             // Get the current time in seconds (not very human readable)
+    tm *local_time = localtime(&currentTime); // Converts the current time to a more human readable format
+
+    char numericDate[80]; // Will hold the formatted date as a string
+    char textDate[80];    // Will hold the formatted date as a string
+
+    strftime(numericDate, sizeof(numericDate), "%d/%m/%Y", local_time); // The strftime function formats the date stored in local_time and stores the result as a string in the numericDate array (for example: 24/04/2025)
+    strftime(textDate, sizeof(textDate), "%A, %B, %Y", local_time);     // Formats the date stored in local_time and stores the result as a string in the textDate array (for example: Thursday, April, 2025)
+
+    int numOfReservationsToday = 0; // Number of reservations made today
+
+    cout << "Today's reservations: " << textDate << " (" << numericDate << ")" << "\n\n";
+
+    for (int i = 0; i < customers_num; i++)
+    { // Loop over all customers
+        for (int j = 0; j < Custs[i].res; j++)
+        { // Loop over all reservations made by each customer
+            // Check if today's date (numericDate) is the same as the date of the reservation (Custs[i].reservations[j].date)
+            if (numericDate == Custs[i].reservations[j].date)
+            {
+                cout << "Reservation made by " << Custs[i].name << ", from " << Custs[i].reservations[j].StartTime << " to " << Custs[i].reservations[j].EndTime << "\n";
+                numOfReservationsToday++; // Increment the number of reservations made today
+            }
+        }
+    }
+
+    if (numOfReservationsToday == 0)
+    {
+        cout << "There were no reservations made today." << "\n";
+    }
+    else
+    {
+        cout << "There were " << numOfReservationsToday << " reservations made today." << "\n";
+    }
+}
+
+void Reservations()
+{
+    int id;
+    char snacks;
+    bool found = false;
+    if (shift)
+    {
+    IDEnteration:
+        cout << "\nThe ID of the customer : ";
+        cin >> id;
+        if (cin.fail() || id >= custCount || id < 0)
+        {
+            cout << "Invalid input\n\n"
+                 << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto IDEnteration;
+        }
+        for (int i = 0; i < custCount; i++)
+        {
+            if (id == Custs[i].ID)
+            {
+                found = true;
+                constant = id;
+            }
+        }
+        if (!found)
+        {
+            cout << "There is no customer with this ID\n";
+            goto IDEnteration;
+        }
+    }
+
+    cout << "\nWelcome at our reservation page :)\n";
+TypeChoice:
+    cout << "\nPlease press M for Multiplayer or S for Single   ";
+    cin >> Custs[constant].reservations[Custs[constant].res].type; // The user chooses the type of reservation
+    if (cin.fail() ||
+        (Custs[constant].reservations[Custs[constant].res].type != 'M' &&
+         Custs[constant].reservations[Custs[constant].res].type != 'S' &&
+         Custs[constant].reservations[Custs[constant].res].type != 'm' &&
+         Custs[constant].reservations[Custs[constant].res].type != 's')) // Validation to avoid error and unpredictable behaviour
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n";
+        goto TypeChoice;
+    }
+GameChoice:
+    cout << "What game are you going to play ? (1 = Fifa, 2 = PES, 3 = Mortal Kombat, 4 = GTA V, 5 = COD, 6 = fall guys)\t";
+    cin >> Custs[constant].reservations[Custs[constant].res].game;
+    if (cin.fail() || Custs[constant].reservations[Custs[constant].res].game > 6 ||
+        Custs[constant].reservations[Custs[constant].res].game < 0) // Game validation
+    {
+        cout << "Invalid input\n\n"
+             << endl;
+        cin.clear();
+        cin.ignore(1000, '\n');
+        goto GameChoice;
+    }
+    // Assigning the name of games
+    if (Custs[constant].reservations[Custs[constant].res].game == 1)
+        Custs[constant].reservations[Custs[constant].res].gameName = "Fifa";
+    else if (Custs[constant].reservations[Custs[constant].res].game == 2)
+        Custs[constant].reservations[Custs[constant].res].gameName = "PES";
+    else if (Custs[constant].reservations[Custs[constant].res].game == 3)
+        Custs[constant].reservations[Custs[constant].res].gameName = "Mortal Kombat";
+    else if (Custs[constant].reservations[Custs[constant].res].game == 4)
+        Custs[constant].reservations[Custs[constant].res].gameName = "GTA";
+    else if (Custs[constant].reservations[Custs[constant].res].game == 5)
+        Custs[constant].reservations[Custs[constant].res].gameName = "COD";
+    else if (Custs[constant].reservations[Custs[constant].res].game == 6)
+        Custs[constant].reservations[Custs[constant].res].gameName = "Fall guys";
+
+Duration:
+    cout << "How much time will you stay ? (NOTE: We only deal with hours so it's currently unavailable to reserve 30 mins, 15 min, etc )   ";
+    cin >> Custs[constant].reservations[Custs[constant].res].time;
+    if (cin.fail() || Custs[constant].reservations[Custs[constant].res].time < 1)
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto Duration;
+    }
+
+    if (Custs[constant].reservations[Custs[constant].res].type == 's' || Custs[constant].reservations[Custs[constant].res].type == 'S') // Reservation price (Not cafe recipt and tax included)
+        Custs[constant].reservations[Custs[constant].res].total = singlePrice * Custs[constant].reservations[Custs[constant].res].time;
+    else
+        Custs[constant].reservations[Custs[constant].res].total = multiPrice * Custs[constant].reservations[Custs[constant].res].time;
+
+EnterCafe:
+    cout << "Press Y if you need any snacks (If not press any button)  ";
+    cin.ignore();
+    cin >> snacks;
+    cin.ignore();
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto EnterCafe;
+    }
+    if (snacks == 'Y' || snacks == 'y')
+        cafeMenu(Nfood, Ndrinks);
+DateAndTime:
+    bool validDate = false;
+    while (!validDate)
+    {
+        cout << "Enter reservation date (dd/mm/yyyy): ";
+        cin >> Custs[constant].reservations[Custs[constant].res].date;
+
+        if (strlen(Custs[constant].reservations[Custs[constant].res].date) == 10 &&
+            isdigit(Custs[constant].reservations[Custs[constant].res].date[0]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[1]) &&
+            Custs[constant].reservations[Custs[constant].res].date[2] == '/' &&
+            isdigit(Custs[constant].reservations[Custs[constant].res].date[3]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[4]) &&
+            Custs[constant].reservations[Custs[constant].res].date[5] == '/' &&
+            isdigit(Custs[constant].reservations[Custs[constant].res].date[6]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[7]) &&
+            isdigit(Custs[constant].reservations[Custs[constant].res].date[8]) && isdigit(Custs[constant].reservations[Custs[constant].res].date[9])) // Date validation
+        {
+            validDate = true;
+        }
+        else
+        {
+            cout << "Invalid date format. Please use dd/mm/yyyy.\n";
+        }
+    }
+
+    bool date_exists = false; // Checks if the reservation is made in the same date of another reservation
+    for (int i = 0; i < customers_num; i++)
+    {
+        for (int j = 0; j < resCount; j++)
+        {
+            if (Custs[constant].reservations[Custs[constant].res].date == Custs[i].reservations[j].date)
+            {
+                date_exists = true;
+            }
+        }
+    }
+
+    cout << "\nEnter the start time of the reservation in the following form ( hh:00 ) " << endl;
+
+    cin >> Custs[constant].reservations[Custs[constant].res].StartTime;
+    if (Custs[constant].reservations[Custs[constant].res].StartTime[2] != ':' ||
+        (Custs[constant].reservations[Custs[constant].res].StartTime[0] != '0' &&
+         Custs[constant].reservations[Custs[constant].res].StartTime[0] != '1') ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[0] > 9 ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[1] > 9 ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[3] > 9 ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[4] > 9 ||
+         cin.peek() == ' ') // Time validation
+    {
+        cout << "\nInvalid input, try again\n\n";
+        goto DateAndTime;
+    }
+    Custs[constant].reservations[Custs[constant].res].StartTimeint = stoi(Custs[constant].reservations[Custs[constant].res].StartTime);
+    Custs[constant].reservations[Custs[constant].res].EndTimeint = Custs[constant].reservations[Custs[constant].res].StartTimeint + Custs[constant].reservations[Custs[constant].res].time;
+    bool time_exists = false; // Checks if the reservation is made in the same time of another reservation
+    for (int i = 0; i < customers_num; i++)
+    {
+        for (int j = 0; j < resCount; j++)
+        {
+            if (Custs[constant].reservations[Custs[constant].res].StartTime >= Custs[i].reservations[j].StartTime &&
+                Custs[constant].reservations[Custs[constant].res].StartTime < Custs[i].reservations[j].EndTime)
+            {
+                time_exists = true;
+            }
+        }
+    }
+    if (date_exists && time_exists) // Increases the number of reserved devices
+    {
+        reserved_devices++;
+    }
+
+    Custs[constant].reservations[Custs[constant].res].billNumber = bill++;
+    cout << "\nYour reservation has been made successfully!\n\n";
+    cout << "\nYour reservation number is: " << Custs[constant].reservations[Custs[constant].res].billNumber << endl;
+    cout << "Date : "
+         << Custs[constant].reservations[Custs[constant].res].date << endl;
+    cout << "Time : From " << Custs[constant].reservations[Custs[constant].res].StartTime << " to " << Custs[constant].reservations[Custs[constant].res].EndTimeint << ":00" << endl
+         << endl;
+    billingSystemCustomer(Custs[constant].reservations[Custs[constant].res], tax);
+    if (shift)
+    {
+        works[storeID].reservations[works[storeID].res] = Custs[constant].reservations[Custs[constant].res]; // Storing the reservation in the worker's data
+        works[storeID].emp.weeklyEarnings += earnings;                                                       // Add weekly earnings to the currently logged in employee (Should be stored in the database file)
+        works[storeID].emp.monthlyEarnings += earnings;                                                      // Add monthly earnings to the currently logged in employee (Should be stored in the database file)
+        works[storeID].emp.yearlyEarnings += earnings;                                                       // Add yearly earnings to the currently logged in employee (Should be stored in the database file)
+        works[storeID].res++;
+    }
+    Custs[constant].res++;
+    constant = storeID;
+}
+void viewInformation()
+{
+    char ask;               // The user wants to change his password or not
+    string currentPassword; // Compares the passwords
+    cout << "\n\nHere are your personal information :\n";
+    cout << "Username : " << Custs[constant].name << endl;
+    cout << "ID : " << Custs[constant].ID << endl;
+    cout << "Phone numbers :\n";
+    for (int i = 0; i < Custs[constant].nums; i++)
+    {
+        cout << Custs[constant].phoneNumbers[i] << endl;
+    }
+Asking:
+    cout << "To edit your password Press Y\nIf not Press any other button ";
+    cin >> ask; // y
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n"
+             << endl;
+        goto Asking;
+    }
+Passwordo:
+    if (ask == 'y' || ask == 'Y')
+    {
+        cout << "Enter your current password :";
+        string password4;
+        char ch88;
+        while (true)
+        {
+            ch88 = getch();
+            if (ch88 == '\b' && password4.empty())
+            {
+                continue;
+            }
+            if (ch88 == '\r')
+            {
+                break;
+            }
+            if (ch88 == '\b')
+            {
+                password4.pop_back();
                 cout << "\b \b";
             }
+            if (ch88 != '\b')
+            {
+                password4 += ch88;
+                cout << "*";
+            }
         }
-        else {
-            password += pass;
+        cout << endl;
+        currentPassword = password4;
+        if (currentPassword != Custs[constant].password)
+        {
+            cout << "\nWrong password\n"
+                 << endl;
+        Askos:
+            cout << "To reset your password Press Y\nTo try again press any other button ";
+            cin >> ask;     // n
+            if (cin.fail()) // Error checking
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n"
+                     << endl;
+                goto Askos;
+            }
+            if (ask == 'Y' || ask == 'y')
+            {
+                forgot();
+                return;
+            }
+            else
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                ask = 'y';
+                goto Passwordo;
+            }
+        }
+        else
+        PasswordMakingV:
+            cout << "Please enter your password: ";
+        string password5;
+        char ch888;
+        while (true)
+        {
+            ch888 = getch();
+            if (ch888 == '\b' && password5.empty())
+            {
+                continue;
+            }
+            if (ch888 == '\r')
+            {
+                break;
+            }
+            if (ch888 == '\b')
+            {
+                password5.pop_back();
+                cout << "\b \b";
+            }
+            if (ch888 != '\b')
+            {
+                password5 += ch888;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        Custs[constant].password = password5;
+        cout << "Please re-enter your password: ";
+        string password3;
+        char ch889;
+        while (true)
+        {
+            ch889 = getch();
+            if (ch889 == '\b' && password3.empty())
+            {
+                continue;
+            }
+            if (ch889 == '\r')
+            {
+                break;
+            }
+            if (ch889 == '\b')
+            {
+                password3.pop_back();
+                cout << "\b \b";
+            }
+            if (ch889 != '\b')
+            {
+                password3 += ch889;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        currentPassword = password3;
+        if (Custs[constant].password != currentPassword)
+        {
+            cout << endl
+                 << "///Passwords don't match please double check it///" << endl
+                 << endl;
+            goto PasswordMakingV;
+        }
+        else
+            cout << "\nPassword changed successfully\n";
+        return;
+    }
+    else
+        return;
+}
+void viewInformationE()
+{
+    char ask;               // The user wants to change his password or not
+    string currentPassword; // Compares the passwords
+    cout << "\n\nHere are your personal information :\n";
+    cout << "Username : " << works[constant].name << endl;
+    cout << "ID : " << works[constant].ID << endl;
+    cout << "Phone numbers :\n";
+    for (int i = 0; i < works[constant].nums; i++)
+    {
+        cout << works[constant].phoneNumbers[i] << endl;
+    }
+Asking:
+    cout << "To edit your password Press Y\nIf not Press any other button ";
+    cin >> ask; // y
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n"
+             << endl;
+        goto Asking;
+    }
+Passwordo:
+    if (ask == 'y' || ask == 'Y')
+    {
+        cout << "Enter your current password :";
+        string password4;
+        char ch88;
+        while (true)
+        {
+            ch88 = getch();
+            if (ch88 == '\b' && password4.empty())
+            {
+                continue;
+            }
+            if (ch88 == '\r')
+            {
+                break;
+            }
+            if (ch88 == '\b')
+            {
+                password4.pop_back();
+                cout << "\b \b";
+            }
+            if (ch88 != '\b')
+            {
+                password4 += ch88;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        currentPassword = password4;
+        if (currentPassword != works[constant].password)
+        {
+            cout << "\nWrong password\n"
+                 << endl;
+        Askos:
+            cout << "To reset your password Press Y\nTo try again press any other button ";
+            cin >> ask;     // n
+            if (cin.fail()) // Error checking
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n"
+                     << endl;
+                goto Askos;
+            }
+            if (ask == 'Y' || ask == 'y')
+            {
+                forgot();
+                return;
+            }
+            else
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                ask = 'y';
+                goto Passwordo;
+            }
+        }
+        else
+        PasswordMakingV:
+            cout << "Please enter your password: ";
+        string password5;
+        char ch888;
+        while (true)
+        {
+            ch888 = getch();
+            if (ch888 == '\b' && password5.empty())
+            {
+                continue;
+            }
+            if (ch888 == '\r')
+            {
+                break;
+            }
+            if (ch888 == '\b')
+            {
+                password5.pop_back();
+                cout << "\b \b";
+            }
+            if (ch888 != '\b')
+            {
+                password5 += ch888;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        works[constant].password = password5;
+        cout << "Please re-enter your password: ";
+        string password3;
+        char ch889;
+        while (true)
+        {
+            ch889 = getch();
+            if (ch889 == '\b' && password3.empty())
+            {
+                continue;
+            }
+            if (ch889 == '\r')
+            {
+                break;
+            }
+            if (ch889 == '\b')
+            {
+                password3.pop_back();
+                cout << "\b \b";
+            }
+            if (ch889 != '\b')
+            {
+                password3 += ch889;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        currentPassword = password3;
+        if (works[constant].password != currentPassword)
+        {
+            cout << endl
+                 << "///Passwords don't match please double check it///" << endl
+                 << endl;
+            goto PasswordMakingV;
+        }
+        else
+            cout << "\nPassword changed successfully\n";
+        return;
+    }
+    else
+        return;
+}
+void viewInformationEmployee()
+{
+    char ask;               // The user wants to change his password or not
+    string currentPassword; // Compares the passwords
+    int IDD;                // Takes the ID of the user he wants to view
+TakingIDVE:
+    cout << "Enter the ID of the customer : ";
+    cin >> IDD;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n"
+             << endl;
+        goto TakingIDVE;
+    }
+    for (int i = 0; i < customers_num; i++)
+    {
+        if (IDD != Custs[i].ID && i == customers_num - 1)
+        {
+            cout << "\nWrong ID, try again\n";
+            goto TakingIDVE;
+        }
+    }
+
+    cout << "Here are the information :\n";
+    cout << "Username : " << Custs[IDD].name << endl;
+    cout << "ID : " << Custs[IDD].ID << endl;
+    cout << "Phone numbers :\n";
+    for (int i = 0; i < Custs[IDD].nums; i++)
+    {
+        cout << Custs[IDD].phoneNumbers[i] << endl;
+    }
+AskingVE:
+    cout << "To edit your password Press Y\nIf not Press any other button ";
+    cin >> ask; // y
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n"
+             << endl;
+        goto AskingVE;
+    }
+PasswordoVE:
+    if (ask == 'y' || ask == 'Y')
+    {
+        cout << "Enter the current password :";
+        string password3;
+        char ch88;
+        while (true)
+        {
+            ch88 = getch();
+            if (ch88 == '\b' && password3.empty())
+            {
+                continue;
+            }
+            if (ch88 == '\r')
+            {
+                break;
+            }
+            if (ch88 == '\b')
+            {
+                password3.pop_back();
+                cout << "\b \b";
+            }
+            if (ch88 != '\b')
+            {
+                password3 += ch88;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        currentPassword = password3;
+        if (currentPassword != Custs[IDD].password)
+        {
+            cout << "\nWrong password\n"
+                 << endl;
+        AskosVE:
+            cout << "To reset the password Press Y\nTo try again press any other button ";
+            cin >> ask;     // n
+            if (cin.fail()) // Error checking
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n"
+                     << endl;
+                goto AskosVE;
+            }
+            if (ask == 'Y' || ask == 'y')
+            {
+                forgot();
+                return;
+            }
+            else
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                ask = 'y';
+                goto PasswordoVE;
+            }
+        }
+        else
+        PasswordMakingVE:
+            cout << "Please enter the password: ";
+        string password33;
+        char ch887;
+        while (true)
+        {
+            ch887 = getch();
+            if (ch887 == '\b' && password33.empty())
+            {
+                continue;
+            }
+            if (ch887 == '\r')
+            {
+                break;
+            }
+            if (ch887 == '\b')
+            {
+                password33.pop_back();
+                cout << "\b \b";
+            }
+            if (ch88 != '\b')
+            {
+                password33 += ch887;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        Custs[IDD].password = password33;
+        cout << "Please re-enter your password: ";
+        string password334;
+        char ch8877;
+        while (true)
+        {
+            ch8877 = getch();
+            if (ch8877 == '\b' && password334.empty())
+            {
+                continue;
+            }
+            if (ch8877 == '\r')
+            {
+                break;
+            }
+            if (ch8877 == '\b')
+            {
+                password334.pop_back();
+                cout << "\b \b";
+            }
+            if (ch8877 != '\b')
+            {
+                password334 += ch8877;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        currentPassword = password334;
+        if (Custs[IDD].password != currentPassword)
+        {
+            cout << endl
+                 << "///Passwords don't match please double check it///" << endl
+                 << endl;
+            goto PasswordMakingVE;
+        }
+        else
+            cout << "\nPassword changed successfully\n";
+    }
+    else
+    {
+        cout << "To view another customer's information Press Y\nTo go to the main menu Press any other button\n";
+        cin >> ask;
+        if (ask == 'y' || ask == 'Y')
+        {
+            goto TakingIDVE;
+        }
+    }
+}
+void viewReservation()
+{
+    int billy; // Bill number
+    bool found = false;
+    char ans; // Checks if the user wants to view any other reservation
+Bill:
+    cout << "Enter the bill number : ";
+    cin >> billy;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto Bill;
+    }
+    if (Custs[constant].reservations[billy].time < 1)
+    {
+        cout << "Reservation not found\n\n";
+        goto Bill;
+    }
+    cout << "Type of reservation : " << Custs[constant].reservations[billy].type << endl;
+    cout << "Game : " << Custs[constant].reservations[billy].gameName << endl;
+    cout << "Duration : " << Custs[constant].reservations[billy].time << " hours" << endl;
+    cout << "Date : " << Custs[constant].reservations[billy].date << endl;
+    cout << "From " << Custs[constant].reservations[billy].StartTime << " : 00" << endl;
+    cout << "To " << Custs[constant].reservations[billy].EndTime << " : 00" << endl
+         << endl
+         << endl;
+    cout << "Cafe orders :" << endl
+         << endl;
+
+    cout << setw(37) << left << "PlayStation for " + to_string(Custs[constant].reservations[billy].time) + " hours"  // Time spent playing
+         << setw(10) << left << to_string(int(round(Custs[constant].reservations[billy].total))) + " EGP" << "\n\n"; // PlayStation rent price
+
+    cout << "Food & Drinks:" << "\n\n";
+    cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
+         << setw(30) << left << "Description"    // Name column header of the food/drink
+         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+
+    int totalFoodPrice = 0;
+    // Displaying and calculating the total price of the current food using a for loop
+    for (int i = 0; i < Custs[constant].reservations[billy].foodOrderCount; i++)
+    {                                                                                                                                                               // Loop n times the number of the foods ordered
+        cout << setw(7) << left << Custs[constant].reservations[billy].F[i].quantity                                                                                // Display quantity
+             << setw(30) << left << Custs[constant].reservations[billy].F[i].name                                                                                   // Display name
+             << setw(10) << left << to_string(Custs[constant].reservations[billy].F[i].price * Custs[constant].reservations[billy].F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
+        totalFoodPrice = totalFoodPrice + (Custs[constant].reservations[billy].F[i].price * Custs[constant].reservations[billy].F[i].quantity);                     // Add the current food price to the total price of foods
+    }
+
+    int totalDrinksPrice = 0;
+    // Displaying and calculating the total price of the current drink using a for loop
+    for (int j = 0; j < Custs[constant].reservations[billy].drinksOrderCount; j++)
+    {                                                                                                                                                               // Loop n times the number of the drinks ordered
+        cout << setw(7) << left << Custs[constant].reservations[billy].D[j].quantity                                                                                // Display quantity
+             << setw(30) << left << Custs[constant].reservations[billy].D[j].name                                                                                   // Display name
+             << setw(10) << left << to_string(Custs[constant].reservations[billy].D[j].price * Custs[constant].reservations[billy].D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+        totalDrinksPrice = totalDrinksPrice + (Custs[constant].reservations[billy].D[j].price * Custs[constant].reservations[billy].D[j].quantity);                 // Add the current drink price to the total price of drinks
+    }
+
+    float subtotal = Custs[constant].reservations[billy].total + totalFoodPrice + totalDrinksPrice; // Calculate subtotal
+    float total_price = subtotal + ((tax / 100) * subtotal);                                        // Calculate total (subtotal + tax)
+
+    cout << "\n"
+         << setw(37) << left << "Subtotal"
+         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+    cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
+         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+
+    cout << "\n\nTo view any reservation Press Y\nTo go back press any other button\n";
+    cin >> ans;
+    if (ans == 'y' || ans == 'Y')
+    {
+        goto Bill;
+    }
+}
+void viewReservationE()
+{
+    int billy; // Bill number
+    int IDD;   // User ID
+    char ans;  // Checks if the user wants to view any other reservation
+    bool found = false;
+BillE:
+    cout << "Enter the user ID : ";
+    cin >> IDD;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto BillE;
+    }
+    cout << "Enter the bill number : ";
+    cin >> billy;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto BillE;
+    }
+    if (Custs[IDD].reservations[billy].time < 1)
+    {
+        cout << "Reservation not found\n\n";
+        goto BillE;
+    }
+
+    cout << "Type of reservation : " << Custs[IDD].reservations[billy].type << endl;
+    cout << "Game : " << Custs[IDD].reservations[billy].gameName << endl;
+    cout << "Duration : " << Custs[IDD].reservations[billy].time << " hours" << endl;
+    cout << "Date : " << Custs[IDD].reservations[billy].date << endl;
+    cout << "From " << Custs[IDD].reservations[billy].StartTime << " : 00" << endl;
+    cout << "To " << Custs[IDD].reservations[billy].EndTime << " : 00" << endl
+         << endl
+         << endl;
+    cout << "Cafe orders :" << endl
+         << endl;
+
+    cout << setw(37) << left << "PlayStation for " + to_string(Custs[IDD].reservations[billy].time) + " hours"  // Time spent playing
+         << setw(10) << left << to_string(int(round(Custs[IDD].reservations[billy].total))) + " EGP" << "\n\n"; // PlayStation rent price
+
+    cout << "Food & Drinks:" << "\n\n";
+    cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
+         << setw(30) << left << "Description"    // Name column header of the food/drink
+         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+
+    int totalFoodPrice = 0;
+    // Displaying and calculating the total price of the current food using a for loop
+    for (int i = 0; i < Custs[IDD].reservations[billy].foodOrderCount; i++)
+    {                                                                                                                                                     // Loop n times the number of the foods ordered
+        cout << setw(7) << left << Custs[IDD].reservations[billy].F[i].quantity                                                                           // Display quantity
+             << setw(30) << left << Custs[IDD].reservations[billy].F[i].name                                                                              // Display name
+             << setw(10) << left << to_string(Custs[IDD].reservations[billy].F[i].price * Custs[IDD].reservations[billy].F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
+        totalFoodPrice = totalFoodPrice + (Custs[IDD].reservations[billy].F[i].price * Custs[IDD].reservations[billy].F[i].quantity);                     // Add the current food price to the total price of foods
+    }
+
+    int totalDrinksPrice = 0;
+    // Displaying and calculating the total price of the current drink using a for loop
+    for (int j = 0; j < Custs[IDD].reservations[billy].drinksOrderCount; j++)
+    {                                                                                                                                                     // Loop n times the number of the drinks ordered
+        cout << setw(7) << left << Custs[IDD].reservations[billy].D[j].quantity                                                                           // Display quantity
+             << setw(30) << left << Custs[IDD].reservations[billy].D[j].name                                                                              // Display name
+             << setw(10) << left << to_string(Custs[IDD].reservations[billy].D[j].price * Custs[IDD].reservations[billy].D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+        totalDrinksPrice = totalDrinksPrice + (Custs[IDD].reservations[billy].D[j].price * Custs[IDD].reservations[billy].D[j].quantity);                 // Add the current drink price to the total price of drinks
+    }
+
+    float subtotal = Custs[IDD].reservations[billy].total + totalFoodPrice + totalDrinksPrice; // Calculate subtotal
+    float total_price = subtotal + ((tax / 100) * subtotal);                                   // Calculate total (subtotal + tax)
+
+    cout << "\n"
+         << setw(37) << left << "Subtotal"
+         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+    cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
+         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+
+    cout << "\n\nTo view any reservation Press Y\nTo go back press any other button\n";
+    cin >> ans;
+    if (ans == 'y' || ans == 'Y')
+    {
+        goto BillE;
+    }
+}
+char ans;
+void editReservation()
+{
+    int billy;
+Billoo:
+    cout << "Enter the bill number : ";
+    cin >> billy;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto Billoo;
+    }
+    if (Custs[constant].reservations[billy].time < 1)
+    {
+        cout << "Reservation not found\n\n";
+        goto Billoo;
+    }
+    do
+    {
+        cout << "\nPress H to edit your reservation's duration\nPress T to edit the game and the reservation's type (Single or Multi)\nPress D to edit date and time \n";
+        char choice;
+        cin >> choice;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            continue;
+        }
+        else if (choice == 'H' || choice == 'h') // edit time // hours
+        {
+        DurationE:
+            cout << "\nHow much time will you stay (NOTE: We only deal with hours so it's currently unavailable to reserve 30 mins, 15 min, etc )\n";
+            cin >> Custs[constant].reservations[billy].time;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n";
+                goto DurationE;
+            }
+        }
+        else if (choice == 'T' || choice == 't') // edit type
+        {
+            cout << "\nPlease press M for Multiplayer or S for Single   ";
+        TypeChoiceE:
+            cin >> Custs[constant].reservations[billy].type; // The user chooses the type of reservation
+            if (cin.fail() ||
+                (Custs[constant].reservations[billy].type != 'M' &&
+                 Custs[constant].reservations[billy].type != 'S' &&
+                 Custs[constant].reservations[billy].type != 'm' &&
+                 Custs[constant].reservations[billy].type != 's')) // Validation to avoid error and unpredictable behaviour
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n";
+                goto TypeChoiceE;
+            }
+        GameChoiceE:
+            cout << "What game are you going to play ? (1 = Fifa, 2 = PES, 3 = Mortal Kombat, 4 = GTA V, 5 = COD, 6 = fall guys) ";
+            cin >> Custs[constant].reservations[billy].game;
+            if (cin.fail())
+            {
+                cout << "Invalid input" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                goto GameChoiceE;
+            }
+        }
+        else if (choice == 'd' || choice == 'D') // edit date and time
+        {
+        DateAndTime:
+            cout << "Enter date of reservation (DD/MM/YYYY) Ex.: 02/03/2025\n";
+            bool validDate = false;
+            while (!validDate)
+            {
+                cout << "Enter reservation date (dd/mm/yyyy): ";
+                cin >> Custs[constant].reservations[billy].date;
+
+                if (strlen(Custs[constant].reservations[billy].date) == 10 &&
+                    isdigit(Custs[constant].reservations[billy].date[0]) && isdigit(Custs[constant].reservations[billy].date[1]) &&
+                    Custs[constant].reservations[billy].date[2] == '/' &&
+                    isdigit(Custs[constant].reservations[billy].date[3]) && isdigit(Custs[constant].reservations[billy].date[4]) &&
+                    Custs[constant].reservations[billy].date[5] == '/' &&
+                    isdigit(Custs[constant].reservations[billy].date[6]) && isdigit(Custs[constant].reservations[billy].date[7]) &&
+                    isdigit(Custs[constant].reservations[billy].date[8]) && isdigit(Custs[constant].reservations[billy].date[9])) // Dte va;idation
+                {
+                    validDate = true;
+                }
+                else
+                {
+                    cout << "Invalid date format. Please use dd/mm/yyyy.\n";
+                }
+            }
+            Custs[constant].reservations[billy].StartTimeint = stoi(Custs[constant].reservations[billy].StartTime);
+            Custs[constant].reservations[billy].EndTimeint = Custs[constant].reservations[billy].StartTimeint + Custs[constant].reservations[billy].time;
+
+            bool date_exists = false; // Checks if the reservation is made in the same date of another reservation
+            for (int i = 0; i < customers_num; i++)
+            {
+                for (int j = 0; j < resCount; j++)
+                {
+                    if (Custs[constant].reservations[billy].date == Custs[i].reservations[j].date)
+                    {
+                        date_exists = true;
+                    }
+                }
+            }
+
+            cout << "Enter the start time of the reservation in the following form ( hh:00 ) " << endl;
+
+            cin >> Custs[constant].reservations[billy].StartTime;
+            if (Custs[constant].reservations[billy].clock[2] != ':' ||
+                (Custs[constant].reservations[billy].clock[0] != '0' &&
+                 Custs[constant].reservations[billy].clock[0] != '1')) // Time validation
+            {
+                cout << "\n\nInvalid input, try again\n\n";
+                goto DateAndTime;
+            }
+            bool time_exists = false; // Checks if the reservation is made in the same time of another reservation
+            for (int i = 0; i < customers_num; i++)
+            {
+                for (int j = 0; j < resCount; j++)
+                {
+                    if (Custs[constant].reservations[billy].StartTime >= Custs[i].reservations[j].StartTime &&
+                        Custs[constant].reservations[billy].StartTime < Custs[i].reservations[j].EndTime)
+                    {
+                        time_exists = true;
+                    }
+                }
+            }
+            if (date_exists && time_exists) // Increases the number of reserved devices
+            {
+                reserved_devices++;
+            }
+        }
+
+        // leave this part right where it issss
+    Repetition:
+        cout << endl
+             << "To edit more information Press Y\nIf not Press any other button\n"; // repetition
+        cin >> ans;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            goto Repetition;
+        }
+        else if (ans != 'y' && ans != 'Y')
+        {
+            cout << "Information updated successfully\n";
+            cout << "\nYour reservation number is: " << Custs[constant].reservations[billy].billNumber << endl;
+            cout << "Date : "
+                 << Custs[constant].reservations[billy].date << endl;
+            cout << "Time : From " << Custs[constant].reservations[billy].clock << " to " << Custs[constant].reservations[billy].EndTime << ":00" << endl
+                 << endl;
+        }
+
+    } while (ans == 'y' || ans == 'Y');
+}
+
+int login()
+{
+    char pass; // Checks if the user forgot his password
+    customer check;
+    check.ID = -1;
+tany2:
+    cout << "Who are you?" << endl
+         << "Customer = 1 , Worker = 2" << endl;
+    cin >> i;
+    if ((i != 1 && i != 2) || cin.fail())
+    {
+        cout << "\nInvalid input\n";
+        cin.clear();
+        cin.ignore(1000, '\n');
+        goto tany2;
+    }
+    cout << "Please enter the following data:" << endl;
+    cout << "username:";
+    cin >> check.name;
+    if (cin.peek() == ' ')
+    {
+        cout << "Your username can't contain spaces" << endl;
+        cin.clear();
+        cin.ignore(1000, '\n');
+        goto tany2;
+    }
+    cout << endl
+         << "ID:";
+    cin >> check.ID;
+    check.ID--;
+    if (cin.fail())
+    {
+        cout << "\nInvalid ID, Try again\n";
+        cin.clear();
+        cin.ignore(1000, '\n');
+        goto tany2;
+    }
+stupid2:
+    cout << endl
+         << "password:";
+
+    string password3;
+    char ch88;
+    while (true)
+    {
+        ch88 = getch();
+        if (ch88 == '\b' && password3.empty())
+        {
+            continue;
+        }
+        if (ch88 == '\r')
+        {
+            break;
+        }
+        if (ch88 == '\b')
+        {
+            password3.pop_back();
+            cout << "\b \b";
+        }
+        if (ch88 != '\b')
+        {
+            password3 += ch88;
             cout << "*";
         }
-    } while (true);
+    }
     cout << endl;
-}
-
-bool isUsernameTaken(char choiceOfRegister, const string& userName) {
-    if (choiceOfRegister == 'c' || choiceOfRegister == 'C') {
-        for (int i = 0; i < clientCount; i++) {
-            if (clients[i].cUsername == userName) {
-                return true;
+    check.password = password3;
+    if (i == 1)
+    {
+        if (check.ID == -1 || check.ID >= custCount) 
+                {
+            cout << "\nInvalid id\n"
+                 << endl;
+            goto tany2;
+        }
+        else
+        {
+            if (check.name == Custs[check.ID].name && check.password == Custs[check.ID].password)
+            {
+                cout << "You have logged in successfully!";
+                loggedIn = true;
+                constant = check.ID;
+                storeID = constant;
             }
-        }
-    }
-    else if (choiceOfRegister == 't' || choiceOfRegister == 'T') {
-        for (int i = 0; i < trainerCount; i++) {
-            if (trainers[i].tUsername == userName) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-void loadData() {
-    ifstream clientFile("clients.txt");
-    ifstream trainerFile("trainers.txt");
-    int maxClientID = 0, maxTrainerID = 0;
-    if (clientFile.is_open()) {
-        while (clientFile >> clients[clientCount].clientId >> clients[clientCount].cUsername >> clients[clientCount].cPassword) {
-            int currentID = stoi(clients[clientCount].clientId);
-            if (currentID >= maxClientID) {
-                maxClientID = currentID + 1;
-            }
-            clientCount++;
-        }
-        clientFile.close();
-    }
-
-    // Assign clients to trainers 
-    int clientIndex = 0;
-    for (int i = 0; i < NUM_TRAINERS; ++i) {
-        for (int j = 0; j < N && clientIndex < clientCount; ++j) {
-            trainers[i].client[j] = clients[clientIndex];
-            clientIndex++;
-        }
-    }
-
-    if (trainerFile.is_open()) {
-        while (trainerFile >> trainers[trainerCount].TrainerID >> trainers[trainerCount].tUsername >> trainers[trainerCount].tPassword) {
-            int currentID = stoi(trainers[trainerCount].TrainerID);
-            if (currentID >= maxTrainerID) {
-                maxTrainerID = currentID + 1;
-            }
-            trainerCount++;
-        }
-        trainerFile.close();
-    }
-
-    nextClientID = maxClientID > nextClientID ? maxClientID : nextClientID;
-    nextTrainerID = maxTrainerID > nextTrainerID ? maxTrainerID : nextTrainerID;
-}
-
-// Initialized workouts as they aren't in a file
-Workout workouts[SIZE] = {
-{"W001", "Full Body Blast", {"Squats", "Push-ups", "Pull-ups", "Plank", "Lunges"}, 60, 5 },
-{ "W002", "Cardio Power", {"Running", "Jumping Jacks", "Burpees", "Mountain Climbers"}, 45, 4 },
-{ "W003", "Strength Focus", {"Bench Press", "Deadlifts", "Overhead Press", "Rows"}, 75, 4 },
-{ "W004", "Leg Day",  {"Squats", "Lunges", "Leg Press", "Calf Raises"}, 55, 4 },
-{ "W005", "Core Circuit", {"Crunches", "Leg Raises", "Russian Twists", "Plank"}, 30, 4 }
-};
-
-int workoutCount = 5;
-
-
-// Function to find if the username is unique
-
-Client* findClient(const string& id) {
-    for (int i = 0; i < clientCount; i++) {
-        if (clients[i].clientId == id) {
-            return &clients[i]; // Client found
-        }
-    }
-    return nullptr; // Client not found
-}
-
-Trainer* findTrainerById(const string& id) {
-    for (int i = 0; i < trainerCount; i++) {
-        if (trainers[i].TrainerID == id) {
-            return &trainers[i]; // Trainer found
-        }
-    }
-    return nullptr; // Trainer not found
-}
-
-
-//Fatma
-
-void registerClient() {
-    char choiceOfRegister = 'c';
-    if (clientCount >= N * NUM_TRAINERS) {
-        cout << "Maximum number of clients reached.\n";
-        return;
-    }
-
-    Client& newClient = clients[clientCount];
-    newClient.clientId = to_string(nextClientID);
-
-    cout << "\n--- Register as Client ---" << endl;
-
-    do {
-        cout << "Username: ";
-        cin >> newClient.cUsername;
-        if (newClient.cUsername.empty()) {
-            cout << "Error: Username cannot be empty. Please try again.\n";
-            continue;
-        }
-        if (isUsernameTaken(choiceOfRegister, newClient.cUsername)) {
-            cout << "This username is taken. Choose another one.\n\n";
-        }
-        else {
-            break;
-        }
-    } while (true);
-
-    cout << "Password: ";
-    char pass;
-    readPassword(newClient.cPassword, pass);
-    if (newClient.cPassword.empty()) {
-        cout << "Error: Password cannot be empty. Registration failed.\n";
-        return;
-    }
-
-    ofstream clientFile(CLIENT_FILE, ios::app);
-    if (clientFile.is_open()) {
-        clientFile << newClient.clientId << '\n' << newClient.cUsername << '\n' << newClient.cPassword << endl;
-        clientFile.close();
-        cout << "Client registered successfully! now you can proceed and login\n";
-        cout << "Your ID is: " << nextClientID << "\n\n";
-        int trainerIndex = clientCount / N; // Determine which trainer to assign to
-        if (trainerIndex < NUM_TRAINERS) {
-            int clientSlot = clientCount % N; // Determine the next available slot for that trainer
-            trainers[trainerIndex].client[clientSlot] = newClient;
-
-        }
-
-        clients[clientCount].clientId = to_string(nextClientID++);
-        clientCount++;
-    }
-    else {
-        cerr << "Error: Unable to open client file for writing." << endl;
-    }
-}
-
-void registerTrainer() {
-    char choiceOfRegister = 't';
-    if (trainerCount >= N) {
-        cout << "Maximum number of trainers reached.\n";
-        return;
-    }
-
-    Trainer& newTrainer = trainers[trainerCount];
-    newTrainer.TrainerID = to_string(nextTrainerID);
-    char pass;
-
-    cout << "\n--- Register as Trainer ---" << endl;
-
-    do {
-        cout << "Username: ";
-        cin >> newTrainer.tUsername;
-        if (newTrainer.tUsername.empty()) {
-            cout << "Error: Username cannot be empty. Please try again.\n";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            continue;
-        }
-        if (isUsernameTaken(choiceOfRegister, newTrainer.tUsername)) {
-            cout << "This username is taken. Choose another one.\n\n";
-        }
-        else {
-            break;
-        }
-    } while (true);
-
-    cout << "Password: ";
-    readPassword(newTrainer.tPassword, pass);
-    if (newTrainer.tPassword.empty()) {
-        cout << "Error: Password cannot be empty. Registration failed.\n";
-        return;
-    }
-
-    ofstream trainerFile(TRAINER_FILE, ios::app);
-    if (trainerFile.is_open()) {
-        trainerFile << newTrainer.TrainerID << '\n' << newTrainer.tUsername << '\n' << newTrainer.tPassword << endl;
-        trainerFile.close();
-        cout << "Trainer registered successfully! now you can proceed to login\n";
-        cout << "Your ID is: " << nextTrainerID << "\n\n";
-        trainers[trainerCount].TrainerID = to_string(nextTrainerID++);
-        trainerCount++;
-    }
-    else {
-        cerr << "Error: Unable to open trainer file for writing." << endl;
-    }
-}
-
-Client* loggedInClient = nullptr;
-Trainer* loggedInTrainer = nullptr;
-string loggedInUserType = "";
-
-string loginUser() {
-    string username, password;
-    string storedUsername, storedPassword;
-    char pass;
-
-    cout << "\n--- Login ---" << endl;
-    cout << "Enter your username: ";
-    cin >> username;
-    cout << "Enter your password: ";
-    readPassword(password, pass);
-
-    for (int i = 0; i < clientCount; i++) {
-        if (clients[i].cUsername == username && clients[i].cPassword == password) {
-            cout << "Logged in successfully as a Client!\n";
-            loggedInClient = &clients[i];
-            loggedInUserType = "client";
-            return "client";
-        }
-    }
-    for (int i = 0; i < trainerCount; i++) {
-        if (trainers[i].tUsername == username && trainers[i].tPassword == password) {
-            cout << "Logged in successfully as a Trainer!\n";
-            loggedInTrainer = &trainers[i];
-            loggedInUserType = "trainer";
-            return "trainer";
-        }
-    }
-
-    cout << "\nLogin failed. Invalid username or password.\n\n";
-    return "";
-}
-
-
-//Kariman Functions
-
-void deleteWorkout() {
-    string id;
-    cout << "Enter workout ID to delete: ";
-    cin >> id;
-
-    bool found = false;
-
-    for (int i = 0; i < workoutCount; ++i) {
-        if (workouts[i].workoutID == id) {
-            char confirm;//Confirm deletion
-            cout << "Are you sure you want to delete workout \"" << workouts[i].workoutName << "\"? (Y/N): ";
-            cin >> confirm;
-
-            if (confirm == 'Y' || confirm == 'y') {
-                //  to delete from global workouts array
-                for (int j = i; j < workoutCount - 1; ++j) {
-                    workouts[j] = workouts[j + 1];
-                }
-                workoutCount--;
-                found = true;
-                cout << "Workout deleted successfully.\n";
-
-                // to remove from clients' workout plans
-                for (int t = 0; t < NUM_TRAINERS; ++t) {
-                    for (int c = 0; c < N; ++c) {
-                        for (int w = 0; w < SIZE; ++w) {
-                            if (trainers[t].client[c].workoutplans[w].workoutID == id) {
-                                trainers[t].client[c].workoutplans[w] = Workout(); // Clear the workout
-                            }
-                        }
-                    }
-                }
-
-                //  to remove from the global clients array
-                for (int c = 0; c < clientCount; ++c) {
-                    for (int w = 0; w < SIZE; ++w) {
-                        if (clients[c].workoutplans[w].workoutID == id) {
-                            clients[c].workoutplans[w] = Workout();
-                        }
-                    }
-                }
-            }
-            else {
-                cout << "Deletion cancelled.\n";
-            }
-
-            break;
-        }
-    }
-
-    if (!found) {
-        cout << "Workout not found.\n";
-    }
-}
-
-void editWorkout() {
-    string id;
-    cout << "Enter workout ID to edit: ";
-    cin >> id;
-    cout << endl;
-
-    for (int i = 0; i < workoutCount; i++) {
-        if (workouts[i].workoutID == id) {
-            cout << "Editing workout:" << workouts[i].workoutName << endl;
-
-            cout << "Enter new workout name: ";
-            cin.ignore();
-            getline(cin, workouts[i].workoutName);
-
-            // exerciseCount must be an integer
-            while (true) {
-                cout << "Enter new number of exercises: ";
-                if (cin >> workouts[i].exerciseCount) {
-                    // Check if  integer and within range
-                    if (cin.peek() == '\n' && workouts[i].exerciseCount > 0 &&
-                        workouts[i].exerciseCount <= SIZE) {
-                        break; // Valid input, exit the loop
-                    }
-                    else {
-                        cout << "Invalid input, Please enter a positive integer less than or equal to "
-                            << SIZE << ".\n";
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    }
-                }
-                else {
-                    cout << "Invalid input, Please enter an integer.\n";
+            else
+            {
+                cout << "\nWrong Credentials!\n"
+                     << endl;
+            passso:
+                cout << "Forgot your password ? press Y\nTo go back to main menu press M\nTo try again Press any other button\n";
+                cin >> pass;
+                if (cin.fail())
+                {
                     cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cin.ignore(1000, '\n');
+                    goto passso;
                 }
-            }
-
-            cin.ignore(); // Consume the newline character
-
-            for (int j = 0; j < workouts[i].exerciseCount; j++) {
-                cout << "Exercise name " << (j + 1) << ": ";
-                getline(cin, workouts[i].exercises[j]);
-            }
-
-            // Validate duration (must be an integer)
-            while (true) {
-                cout << "Enter new duration: ";
-                if (cin >> workouts[i].duration) {
-                    // Check if it's an integer AND positive
-                    if (cin.peek() == '\n' && workouts[i].duration > 0) {
-                        break; // Valid input
-                    }
-                    else {
-                        cout << "Invalid input, Please enter a positive integer for duration.\n";
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    }
+                else if (pass == 'y' || pass == 'Y')
+                {
+                    forgot();
                 }
-                else {
-                    cout << "Invalid input, Please enter an integer.\n";
+                else if (pass == 'm' || pass == 'M')
+                    return 0;
+                else
+                    goto tany2;
+            }
+        }
+    }
+    else if (i == 2)
+    {
+        if (check.ID == -1 || check.ID >= workCount)
+        {
+            cout << "Invalid id" << endl;
+            goto tany2;
+        }
+        else
+        {
+            if (check.name == works[check.ID].name && check.password == works[check.ID].password)
+            {
+                cout << "You have logged in successfully!";
+                lamba = false;
+                loggedIn = true;
+                shift = true;
+                constant = check.ID;
+                storeID = constant;
+            }
+            else
+            {
+                cout << "\nWrong Credentials!\n"
+                     << endl;
+                cout << "Forgot your password ? press Y\nTo go back to main menu press M\nTo try again Press any other button\n";
+                cin >> pass;
+                if (pass == 'y' || pass == 'Y')
+                {
+                    forgot();
+                }
+                else if (pass == 'm' || pass == 'M')
+                    return 0;
+                else if (cin.fail())
+                {
                     cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cin.ignore(1000, '\n');
                 }
+                else
+                    goto tany2;
             }
-
-            // Update workout in clients' plans
-            for (int t = 0; t < NUM_TRAINERS; ++t) {
-                for (int c = 0; c < N; ++c) {
-                    for (int w = 0; w < SIZE; ++w) {
-                        if (trainers[t].client[c].workoutplans[w].workoutID == id) {
-                            trainers[t].client[c].workoutplans[w] = workouts[i];
-                        }
-                    }
-                }
-            }
-
-            for (int c = 0; c < clientCount; ++c) {
-                for (int w = 0; w < SIZE; ++w) {
-                    if (clients[c].workoutplans[w].workoutID == id) {
-                        clients[c].workoutplans[w] = workouts[i];
-                    }
-                }
-            }
-
-            cout << "Workout done!\n\n";
-            return;
         }
     }
-    cout << "Workout not found\n";
-    cout << "----------------------------------------\n\n";
+    return constant;
 }
-
-void listAllWorkouts() {
-    if (workoutCount == 0) {
-        cout << "No workouts available.\n";
-        return;
+void registr()
+{
+    int i;               // Customer or worker 
+    int nums;            // Number of phone numbers
+    string reenter_Pass; // Let the user reenter his password to check it.
+CustWork:
+    cout << "Who are you?" << endl
+         << "Press 1 for Customer and 2 for worker. ";
+    cin >> i;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid input\n"
+             << endl;
+        goto CustWork;
     }
-    for (int i = 0; i < workoutCount; i++) {
-        cout << "\nworkout ID :" << workouts[i].workoutID << endl;
-        cout << "workout name :" << workouts[i].workoutName << endl;
-        cout << "Exercises:\n";
-        for (int j = 0; j < workouts[i].exerciseCount; ++j) {
-            cout << "  - " << workouts[i].exercises[j] << endl;
-        }
-        cout << "duration in minutes:" << workouts[i].duration << endl;
-        cout << "------------------------\n\n";
-    }
-}
+    if (i == 1)
+    {
+        cout << "Please enter your information: " << endl;
 
-
-//_________________________
-
-void assignWorkoutToClient(Trainer currentTrainer[NUM_TRAINERS]) {
-    string answer = "y";
-
-    do {
-        string ClientID, workID;
-        bool CIDFOUND = false, WIDFOUND = false;
-        Workout* workoutToAssignPtr = nullptr;
-        Client* clientPtr = nullptr;
-
-        // Find the client
-        cout << "Enter The Client's ID: ";
-        cin >> ClientID;
-
-        for (int i = 0; i < NUM_TRAINERS && !CIDFOUND; i++) {
-            for (int j = 0; j < N && !CIDFOUND; j++) {
-                if (currentTrainer[i].client[j].clientId == ClientID) {
-                    clientPtr = &currentTrainer[i].client[j];
-                    CIDFOUND = true;
-                }
-            }
-        }
-
-        if (!CIDFOUND) {
-            cout << "Invalid Client ID! Please try again.\n\n";
-            continue;
-        }
-
-        // Find the workout
-        cout << "Enter The Workout's ID: ";
-        cin >> workID;
-
-        for (int i = 0; i < workoutCount; i++) {
-            if (workouts[i].workoutID == workID) {
-                workoutToAssignPtr = &workouts[i];
-                WIDFOUND = true;
-                break;
-            }
-        }
-
-        if (!WIDFOUND) {
-            cout << "Invalid Workout ID! Please try again.\n\n";
-            continue;
-        }
-
-        // Check if workout is already assigned
-        bool alreadyAssigned = false;
-        for (int i = 0; i < SIZE; i++) {
-            if (clientPtr->workoutplans[i].workoutID == workID) {
-                alreadyAssigned = true;
-                break;
-            }
-        }
-
-        if (alreadyAssigned) {
-            cout << "This workout is already assigned to this Client.\n\n";
-        }
-        else {
-            // Assign the workout to trainer's copy
-            bool assigned = false;
-            for (int i = 0; i < SIZE; i++) {
-                if (clientPtr->workoutplans[i].workoutID == "") {
-                    clientPtr->workoutplans[i] = *workoutToAssignPtr;
-                    assigned = true;
-                    cout << "Workout \"" << workoutToAssignPtr->workoutName
-                        << "\" added to Client: " << ClientID << " successfully!\n\n";
-
-                    // Assign the workout to the global clients[] array too
-                    for (int k = 0; k < clientCount; ++k) {
-                        if (clients[k].clientId == ClientID) {
-                            for (int m = 0; m < SIZE; m++) {
-                                if (clients[k].workoutplans[m].workoutID == "") {
-                                    clients[k].workoutplans[m] = *workoutToAssignPtr;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-
-                    break;
-                }
-            }
-
-            if (!assigned) {
-                cout << "No available workout plan slots for Client: " << ClientID << ".\n\n";
-            }
-        }
-
-        // Ask to assign another workout
-        cout << "Do you want to add another workout? (Y/N)\n";
-        cout << "Enter your answer: ";
-        cin >> answer;
-        cout << endl;
-
-        while (answer != "Y" && answer != "y" && answer != "N" && answer != "n") {
-            cout << "Invalid input! Please enter 'Y' or 'N': ";
-            cin >> answer;
-            cout << endl;
-        }
-
-    } while (answer == "Y" || answer == "y");
-}
-
-void unassignWorkoutFromClient(Trainer currentTrainer[NUM_TRAINERS]) {
-    string answer;
-
-    do {
-        string ClientID;
-        string workID;
-        bool CIDFOUND = false;
-        bool WIDFOUND = false;
-        bool isWorkoutIDValid = false;
-
-        // Find client ID
-        do {
-            cout << "Please enter the Client ID: ";
-            cin >> ClientID;
-
-            for (int i = 0; i < NUM_TRAINERS && !CIDFOUND; i++) {
-                for (int j = 0; j < N && !CIDFOUND; j++) {
-                    if (currentTrainer[i].client[j].clientId == ClientID) {
-                        CIDFOUND = true;
-                    }
-                }
-            }
-
-            if (!CIDFOUND) {
-                cout << "Client ID not found. Please try again.\n";
-            }
-        } while (!CIDFOUND);
-
-        //  Validate workout ID
-        do {
-            cout << "Enter the Workout ID to remove: ";
-            cin >> workID;
-
-            for (int i = 0; i < workoutCount; i++) {
-                if (workouts[i].workoutID == workID) {
-                    isWorkoutIDValid = true;
-                    break;
-                }
-            }
-
-            if (!isWorkoutIDValid) {
-                cout << "Invalid Workout ID! Please try again.\n\n";
-            }
-        } while (!isWorkoutIDValid);
-
-        //  Unassign from trainer's client array
-        for (int i = 0; i < NUM_TRAINERS; i++) {
-            for (int j = 0; j < N; j++) {
-                if (currentTrainer[i].client[j].clientId == ClientID) {
-                    for (int n = 0; n < SIZE; n++) {
-                        if (currentTrainer[i].client[j].workoutplans[n].workoutID == workID) {
-                            currentTrainer[i].client[j].workoutplans[n] = Workout(); // Clear workout
-                            WIDFOUND = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        //  Unassign from global clients[]
-        for (int c = 0; c < clientCount; ++c) {
-            if (clients[c].clientId == ClientID) {
-                for (int p = 0; p < SIZE; ++p) {
-                    if (clients[c].workoutplans[p].workoutID == workID) {
-                        clients[c].workoutplans[p] = Workout(); // Clear workout
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-
-
-        if (WIDFOUND) {
-            cout << "Workout \"" << workID << "\" was successfully removed from Client ID: " << ClientID << ".\n";
-        }
-        else {
-            cout << "That workout wasn't found in the client's plan.\n";
-        }
-
-        // Ask to unassign another workout
-        cout << "\nDo you want to remove another workout? (Y/N)\n";
-        cout << "Enter your answer: ";
-        cin >> answer;
-        cout << endl;
-        while (answer != "Y" && answer != "y" && answer != "N" && answer != "n") {
-            cout << "Invalid input! Please enter 'Y' or 'N': ";
-            cin >> answer;
-            cout << endl;
-        }
-        cout << "----------------------------------------\n\n";
-    } while (answer == "Y" || answer == "y");
-}
-
-void viewAssignedClientsForWorkout(Trainer currentTrainer[NUM_TRAINERS]) {
-    string answer = "y";
-
-    do {
-        string inputWorkoutID;
-        bool isWorkoutIDValid = false;
-        bool clientFound = false;
-
-        // Validate the workout ID
-        do {
-            cout << "Please enter the Workout ID you want to check: ";
-            cin >> inputWorkoutID;
-
-            for (int i = 0; i < workoutCount; i++) {
-                if (workouts[i].workoutID == inputWorkoutID) {
-                    isWorkoutIDValid = true;
-                    break;
-                }
-            }
-
-            if (!isWorkoutIDValid) {
-                cout << "That Workout ID doesn't exist. Please try again.\n\n";
-            }
-        } while (!isWorkoutIDValid);
-
-        cout << "\nClients assigned to this Workout:\n\n";
-
-        //  Loop through trainers and their clients
-        for (int i = 0; i < NUM_TRAINERS; i++) {
-            for (int j = 0; j < N; j++) {
-                string trainerClientID = currentTrainer[i].client[j].clientId;
-
-                if (!trainerClientID.empty()) {
-                    bool realClientFound = false;
-
-                    for (int c = 0; c < clientCount; c++) {
-                        if (clients[c].clientId == trainerClientID) {
-                            realClientFound = true;
-
-                            //  Check if this client has the workout assigned
-                            for (int k = 0; k < SIZE; k++) {
-                                if (currentTrainer[i].client[j].workoutplans[k].workoutID == inputWorkoutID) {
-                                    cout << "Trainer ID: " << currentTrainer[i].TrainerID << "\n";
-                                    cout << "Client ID: " << clients[c].clientId << "\n";
-                                    cout << "Username: " << clients[c].cUsername << "\n\n";
-                                    clientFound = true;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-
-                    //  Handle missing client in global list
-                    if (!realClientFound) {
-                        cout << "Oops! One of the trainer's clients couldn't be found in the system. ";
-                        cout << "Please contact support if this continues.\n\n";
-                    }
-                }
-            }
-        }
-
-        if (!clientFound) {
-            cout << "No clients are currently assigned to Workout: " << inputWorkoutID << ".\n\n";
-        }
-
-        //Ask to view another workout
-        cout << "Do you want to view another workout? (Y/N)\n";
-        cout << "Enter your answer: ";
-        cin >> answer;
-        cout << endl;
-
-        while (answer != "Y" && answer != "y" && answer != "N" && answer != "n") {
-            cout << "Invalid input! Please enter 'Y' or 'N': ";
-            cin >> answer;
-            cout << endl;
-        }
-
-    } while (answer == "Y" || answer == "y");
-}
-
-
-// Kamila clients
-
-void viewAssignedWorkouts(Client& currentClient) {
-    cout << "\t***Your Assigned Workouts***\n\n";
-
-    int foundWorkouts = 0;
-
-    for (int i = 0; i < SIZE; i++) {
-        if (currentClient.workoutplans[i].workoutID != "") {
-            foundWorkouts++;
-            cout << "Workout #" << foundWorkouts << ":" << endl;
-            cout << "ID: " << currentClient.workoutplans[i].workoutID << endl;
-            cout << "Name: " << currentClient.workoutplans[i].workoutName << endl;
-            cout << "Duration: " << currentClient.workoutplans[i].duration << endl;
-            if (currentClient.workoutplans[i].exerciseCount > 0) {
-                cout << "Exercises:" << endl;
-                for (int j = 0; j < currentClient.workoutplans[i].exerciseCount; j++) {
-                    cout << "- " << currentClient.workoutplans[i].exercises[j] << endl;
-                }
-            }
-            cout << "----------------------------------------" << endl;
-        }
-    }
-    if (foundWorkouts == 0) {
-        cout << "No workouts found! Ask your trainer to assign some.\n\n";
-    }
-}
-
-void logCompletedWorkout(Client& currentClient) {
-    cout << "\t***Log Completed Workout***\n\n";
-
-    viewAssignedWorkouts(currentClient);
-    cout << endl;
-
-    bool hasAssignedWorkouts = false;
-    for (int i = 0; i < SIZE; i++) {
-        if (currentClient.workoutplans[i].workoutID != "") {
-            hasAssignedWorkouts = true;
-            break;
-        }
-    }
-
-    if (!hasAssignedWorkouts) {
-        return;
-    }
-
-    string ans = "y";
-    do {
-        string input;
-        int workoutNumber;
-        int realIndex = -1;
-        int count = 0;
-
-        cout << "Enter the number of the Workout you want to log: ";
-        cin >> input;
-
-        bool valid = true;
-        for (int i = 0; i < input.length(); i++) {
-            if (input[i] < '0' || input[i] > '9') {
-                valid = false;
-                break;
-            }
-        }
-
-        if (!valid) {
-            cout << "Invalid input! Please enter the right number.\n\n";
+    Username:
+        cout << "Username: ";
+        cin >> Custs[custCount].name;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your username can't include spaces" << endl;
             cin.clear();
-            cin.ignore(10000, '\n');
-            continue;
+            cin.ignore(1000, '\n');
+            goto Username;
         }
-
-        workoutNumber = stoi(input);
-
-        for (int i = 0; i < SIZE; i++) {
-            if (currentClient.workoutplans[i].workoutID != "") {
-                count++;
-                if (count == workoutNumber) {
-                    realIndex = i;
-                    break;
-                }
+    phoning:
+        cout << "How many phone numbers do you have? (3 numbers maximum) ";
+        cin >> nums;
+        if (cin.fail() || nums > 3 || nums < 1)
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Please enter a valid number" << endl;
+            goto phoning;
+        }
+        Custs[custCount].nums = nums;
+        for (int i = 0; i < nums; i++)
+        {
+        PhoneNumbering:
+            cout << "Phone number: " << endl;
+            cin >> Custs[custCount].phoneNumbers[i];
+            if (cin.peek() == ' ')
+            {
+                cout << "Your phone number can't include spaces" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                goto PhoneNumbering;
             }
         }
-
-        if (realIndex == -1) {
-            cout << "Invalid workout number!\n\n";
-            continue;
+    PasswordMaking:
+        cout << "Please enter your password: ";
+        string password1;
+        char ch55;
+        while (true)
+        {
+            ch55 = getch();
+            if (ch55 == '\b' && password1.empty())
+            {
+                continue;
+            }
+            if (ch55 == '\r')
+            {
+                break;
+            }
+            if (ch55 == '\b')
+            {
+                password1.pop_back();
+                cout << "\b \b";
+            }
+            if (ch55 != '\b')
+            {
+                password1 += ch55;
+                cout << "*";
+            }
         }
-
         cout << endl;
-        float percent = -1;
-        bool validProgress = false;
 
-        do {
-            cout << "How much of " << currentClient.workoutplans[realIndex].workoutName << " did you complete (0-100%)? ";
-            cin >> input;
+        Custs[custCount].password = password1;
 
-            validProgress = true;
-            bool hasdot = false;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your password can't include spaces" << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto PasswordMaking;
+        }
+        cout << "Please re-enter your password: ";
 
-            for (char c : input) {
-                if (c == '.') {
-                    if (hasdot) {
-                        validProgress = false;
-                        break;
-                    }
-                    hasdot = true;
+        string password2;
+        char ch66;
+        while (true)
+        {
+            ch66 = getch();
+            if (ch66 == '\b' && password2.empty())
+            {
+                continue;
+            }
+            if (ch66 == '\r')
+            {
+                break;
+            }
+            if (ch66 == '\b')
+            {
+                password2.pop_back();
+                cout << "\b \b";
+            }
+            if (ch66 != '\b')
+            {
+                password2 += ch66;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        reenter_Pass = password2;
+
+        if (Custs[custCount].password != reenter_Pass || cin.peek() == ' ')
+        {
+            cout << endl
+                 << "///Passwords don't match please double check it///" << endl
+                 << endl;
+            goto PasswordMaking;
+        }
+    Questions:
+        int q; // Which question does the user want
+        cout << "Choose a question (This question will be used when you reset your password)" << endl
+             << "What's your first Pet Name?=1" << endl
+             << "What's your first Love Name?=2" << endl
+             << "What's your fav Color?=3" << endl;
+        cin >> q;
+        if ((q != 1 && q != 2 && q != 3) || cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            goto Questions;
+        }
+        Custs[custCount].question.no = q;
+    Questions2:
+        cout << "Answer Please : " << endl;
+        cin >> Custs[custCount].question.ans;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your answer can't include spaces." << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto Questions2;
+        }
+        cout << endl
+             << "Account created successfully!" << endl
+             << endl;
+        cout << "Your ID is " << custCount+1 << endl
+             << endl;
+        Custs[custCount].ID = custCount++;
+    }
+    else if (i == 2)
+    {
+        cout << "Please enter your information: " << endl;
+
+    Username2:
+        cout << "Username: ";
+        cin >> works[workCount].name;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your username can't include spaces" << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto Username2;
+        }
+    phoning2:
+        cout << "How many phone numbers do you have? ";
+        cin >> works[workCount].nums;
+        if (cin.fail() || works[workCount].nums > 3 || works[workCount].nums < 1)
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Please enter a valid number" << endl;
+            goto phoning2;
+        }
+        for (int i = 0; i < works[workCount].nums; i++)
+        {
+        PhoneNumbering2:
+            cout << "Phone number: " << endl;
+            cin >> works[workCount].phoneNumbers[i];
+            if (cin.peek() == ' ')
+            {
+                cout << "Your phone number can't include spaces" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                goto PhoneNumbering2;
+            }
+        }
+    PasswordMaking2:
+        cout << "Please enter your password: ";
+
+        string password4;
+        char ch99;
+        while (true)
+        {
+            ch99 = getch();
+            if (ch99 == '\b' && password4.empty())
+                continue;
+            if (ch99 == '\r')
+            {
+                break;
+            }
+            if (ch99 == '\b')
+            {
+                password4.pop_back();
+                cout << "\b \b";
+            }
+            if (ch99 != '\b')
+            {
+                password4 += ch99;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        works[workCount].password = password4;
+
+        if (cin.peek() == ' ')
+        {
+            cout << "Your password can't include spaces" << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto PasswordMaking2;
+        }
+        cout << "Please re-enter your password: ";
+
+        string password7;
+        char ch22;
+        while (true)
+        {
+            ch22 = getch();
+            if (ch22 == '\b' && password7.empty())
+                continue;
+            if (ch22 == '\r')
+            {
+                break;
+            }
+            if (ch22 == '\b')
+            {
+                password7.pop_back();
+                cout << "\b \b";
+            }
+            if (ch22 != '\b')
+            {
+                password7 += ch22;
+                cout << "*";
+            }
+        }
+        cout << endl;
+        reenter_Pass = password7;
+
+        if (works[workCount].password != reenter_Pass || cin.peek() == ' ')
+        {
+            cout << endl
+                 << "///Passwords don't match please double check it///" << endl
+                 << endl;
+            goto PasswordMaking2;
+        }
+    Questions222:
+        int q; // Which question does the user want
+        cout << "Choose a question (This question will be used when you reset your password)" << endl
+             << "What's your first Pet Name? = 1" << endl
+             << "What's your first Love Name? = 2" << endl
+             << "What's your fav Color? = 3" << endl;
+        cin >> q;
+        if ((q != 1 && q != 2 && q != 3) || cin.fail())
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "\nInvalid input\n\n";
+            goto Questions222;
+        }
+        works[workCount].question.no = q;
+    Questions22:
+        cout << "Answer Please : " << endl;
+        cin >> works[workCount].question.ans;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your answer can't include spaces." << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto Questions22;
+        }
+        cout << endl
+             << "Account created successfully!" << endl
+             << endl;
+        cout << "Your ID is " << workCount+1 << endl
+             << endl;
+        works[workCount].ID = workCount++;
+    }
+    else
+    {
+        cout << "\nInvalid input\n";
+        goto CustWork;
+    }
+}
+void forgot()
+{
+    int i;       // Customer or Worker
+    char checkk; // Checks if the user doesn't remember the answer of his question
+    customer check;
+    check.ID = -1;
+
+CustomerOrWorker:
+    cout << "Who are you?" << endl
+         << "Customer = 1 , Worker = 2" << endl;
+    cin >> i;
+    if ((i != 1 && i != 2) || cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "\nInvalid input\n\n";
+        goto CustomerOrWorker;
+    }
+    if (i == 1)
+    {
+    IDcheck:
+        cout << "Please Enter Your ID:" << endl;
+        cin >> check.ID;
+        if (check.ID == -1 || check.ID > custCount)
+        {
+            cout << "Invalid id" << endl;
+            goto IDcheck;
+        }
+    QuestionMaking:
+        if (Custs[check.ID].question.no == 1)
+            cout << "What's your first Pet Name?" << endl;
+        else if (Custs[check.ID].question.no == 2)
+            cout << "What's your first Love Name?" << endl;
+        else if (Custs[check.ID].question.no == 3)
+            cout << "What's your favourite Color?" << endl;
+        cin >> check.question.ans;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your answer can't include spaces \n"
+                 << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto QuestionMaking;
+        }
+        if (check.question.ans == Custs[check.ID].question.ans)
+        {
+        AssignNewPassword:
+            cout << "Write New Password!" << endl;
+
+            string password5;
+            char ch00;
+            while (true)
+            {
+                ch00 = getch();
+                if (ch00 == '\b' && password5.empty())
+                {
+                    continue;
                 }
-                else if (c < '0' || c > '9') {
-                    validProgress = false;
+                if (ch00 == '\r')
+                {
                     break;
                 }
-            }
-
-            if (validProgress) {
-                percent = stof(input);
-                if (percent < 0 || percent > 100) {
-                    validProgress = false;
-                    cout << "Please enter a value between 0 and 100.\n";
+                if (ch00 == '\b')
+                {
+                    password5.pop_back();
+                    cout << "\b \b";
+                }
+                if (ch00 != '\b')
+                {
+                    password5 += ch00;
+                    cout << "*";
                 }
             }
-            else {
-                cout << "Invalid input!\n\n";
-            }
-
-        } while (!validProgress);
-
-        currentClient.progresslogs[realIndex] = percent;
-        cout << "Progress logged: You completed " << percent << "% of " << currentClient.workoutplans[realIndex].workoutName << ".\n\n";
-
-        cout << "Do you want to log another workout? (Y/N): ";
-        cin >> ans;
-
-
-        while (ans != "Y" && ans != "y" && ans != "N" && ans != "n") {
-            cout << "Invalid input! Please enter 'Y' for yes or 'N' for no.\n";
-            cout << "Enter again: ";
-            cin >> ans;
             cout << endl;
+            Custs[check.ID].password = password5;
+            cout << "\nPassword changed succesfully\n";
         }
-
-        cout << "----------------------------------------\n\n";
-    } while (ans == "Y" || ans == "y");
-}
-
-void viewWorkoutHistory(Client& currentClient) {
-    cout << "\t***Workout History***\n\n";
-
-    bool hasWorkouts = false;
-    for (int i = 0; i < SIZE; i++) {
-        if (currentClient.workoutplans[i].workoutID != "") {
-            hasWorkouts = true;
-            cout << "Workout " << i + 1 << ": " << currentClient.workoutplans[i].workoutName << endl;
-            cout << "Completed: " << currentClient.progresslogs[i] << " %" << endl;
-            cout << "----------------------------------------" << endl;
+        else
+        {
+            cout << "Invalid answer please try again" << endl;
+        checko:
+            cout << "If you don't remember your answer Press Y\nIf not Press any other button\n";
+            cin >> checkk;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n\n";
+                goto checko;
+            }
+            else if (checkk == 'y' || checkk == 'Y')
+            {
+                cout << "Please call our hotline 13012\n";
+                return;
+            }
+            else
+                goto QuestionMaking;
         }
     }
-    if (hasWorkouts == false) {
-        cout << "No workout history found. Please log some completed workouts!\n\n";
-    }
-}
+    else if (i == 2)
+    {
+    IDcheck2:
+        cout << "Please Enter Your ID:" << endl;
+        cin >> check.ID;
+        if (check.ID == -1 || check.ID > workCount)
+        {
+            cout << "invalid id" << endl;
+            goto IDcheck2;
+        }
+    QuestionMaking2:
+        if (works[check.ID].question.no == 1)
+            cout << "What's your first Pet Name?" << endl;
+        else if (works[check.ID].question.no == 2)
+            cout << "What's your first Love Name?" << endl;
+        else if (works[check.ID].question.no == 3)
+            cout << "What's your favourite Color?" << endl;
+        cin >> check.question.ans;
+        if (cin.peek() == ' ')
+        {
+            cout << "Your answer can't include spaces \n"
+                 << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            goto QuestionMaking2;
+        }
+        if (check.question.ans == works[check.ID].question.ans)
+        {
+        AssignNewPassword2:
+            cout << "Write New Password!" << endl;
 
-void summarizeWorkoutProgress(Client& currentClient) {
-    cout << "\t***Workout Progress Summary***\n\n";
-
-    float sum = 0.0;
-    int loggedCount = 0;
-    int totalAssigned = 0;
-    int fullyComplete = 0;
-    for (int i = 0; i < SIZE; i++) {
-        if (currentClient.workoutplans[i].workoutID != "") {
-            totalAssigned++;
-            if (currentClient.progresslogs[i] > 0.0) {
-                loggedCount++;
-                sum += currentClient.progresslogs[i];
-                if (currentClient.progresslogs[i] == 100.0) {
-                    fullyComplete++;
+            string password6;
+            char ch11;
+            while (true)
+            {
+                ch11 = getch();
+                if (ch11 == '\b' && password6.empty())
+                    continue;
+                if (ch11 == '\r')
+                {
+                    break;
+                }
+                if (ch11 == '\b')
+                {
+                    password6.pop_back();
+                    cout << "\b \b";
+                }
+                if (ch11 != '\b')
+                {
+                    password6 += ch11;
+                    cout << "*";
                 }
             }
-        }
-    }
-    cout << "Total Workouts Completed (100%): " << fullyComplete << " out of " << totalAssigned << endl;
+            cout << endl;
+            works[check.ID].password = password6;
 
-    cout << "----------------------------------------\n\n";
-
-    if (loggedCount == 0) {
-        cout << "Average Progress : 0% (No progress logged yet)" << endl;
-        cout << "It looks like you haven't logged any progress yet. Let's get started and make that first step today!" << endl;
-    }
-    else {
-        cout << "Average Progress: " << (sum / loggedCount) << " %" << endl;
-        if (fullyComplete == totalAssigned && totalAssigned != 0) {
-            cout << "Fantastic job! You've completed all your workouts with full dedication! Keep it up!" << endl;
-        }
-        else {
-            cout << "You're making excellent progress! Keep pushing towards your goal, you're on the right track." << endl;
-        }
-    }
-    cout << "----------------------------------------\n\n";
-}
-
-
-//Laila clients measurement
-void addMeasurement(Client clients[N * NUM_TRAINERS], string& clientId) {
-    cout << "\t*** Add your new Measurements ***\n\nClient ID: " << clientId << "\n";
-
-    for (int i = 0; i < (N * NUM_TRAINERS); i++) {
-        if (clients[i].clientId == clientId) {
-            if (clients[i].measure.count < 50) {
-                float weight, height;
-
-                // Validate weight
-                while (true) {
-                    cout << "Enter Weight (in kg): ";
-                    cin >> weight;
-                    if (cin.fail() || weight <= 0) {
-                        cin.clear(); //  error
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        cout << "Invalid input. Please enter a positive number for weight.\n";
-                    }
-                    else {
-                        break;
-                    }
-                }
-
-                // Validate height 3shan maykonsh fe division by 0
-                while (true) {
-                    cout << "Enter Height (in meters): ";
-                    cin >> height;
-                    if (cin.fail() || height <= 0) {
-                        cin.clear(); // clear error
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        cout << "Invalid input. Please enter a positive number for height.\n";
-                    }
-                    else {
-                        break;
-                    }
-                }
-
-                int index = clients[i].measure.count;
-                clients[i].measure.weight[index] = weight;
-                clients[i].measure.height[index] = height;
-                clients[i].measure.bmi[index] = weight / (height * height);
-
-                cout << "BMI calculated: " << clients[i].measure.bmi[index] << "\n";
-
-                clients[i].measure.count++;
-                cout << "Measurement added successfully for client " << clientId << "!\n\n";
+            if (cin.peek() == ' ')
+            {
+                cout << "Your password can't include spaces" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                goto AssignNewPassword2;
             }
-            else {
-                cout << "Maximum number of measurements reached for this client.\n";
+            else
+            {
+                cout << "\nPassword changed succesfully\n";
             }
-            return;
         }
-    }
-
-    cout << "Client with ID " << clientId << " not found.\n";
-}
-
-void viewMeasurements(Client clients[N * NUM_TRAINERS], string& clientId) {
-    cout << "\t***Measurement History***\n\nClient ID: " << clientId << "\n";
-    for (int i = 0; i < (N * NUM_TRAINERS); i++) {
-        if (clients[i].clientId == clientId) {
-            if (clients[i].measure.count > 0) {
-                for (int j = 0; j < clients[i].measure.count; j++) {
-                    cout << "Measurement " << j + 1 << ":\n";
-                    cout << "Weight: " << clients[i].measure.weight[j] << " kg\n";
-                    cout << "Height: " << clients[i].measure.height[j] << " m\n";
-                    cout << "BMI: " << clients[i].measure.bmi[j] << "\n";
-                    cout << "----------------------\n";
-                }
+        else
+        {
+            cout << "Invalid answer please try again\n"
+                 << endl;
+        checkoo:
+            cout << "If you don't remember your answer Press Y\nIf not Press any other button\n";
+            cin >> checkk;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\nInvalid input\n\n";
+                goto checkoo;
             }
-            else {
-                cout << "No measurements found for this client.\n";
+            else if (checkk == 'y' || checkk == 'Y')
+            {
+                cout << "Please call our hotline 13012\n\n";
+                return;
             }
-            return;
-        }
-    }
-    cout << "Client with ID " << clientId << " not found.\n";
-}
-
-void viewAssignedClients(Trainer trainer[N]) {
-    cout << "To Show Your Assigned Clients, Please Enter Your ID: ";
-    string IDToBeFound;
-    cin >> IDToBeFound;
-
-    Trainer* currentTrainer = findTrainerById(IDToBeFound);
-
-    if (currentTrainer != nullptr) {
-        cout << "\nYour CLients:" << '\n';
-        for (int j = 0, t = 1; j < 10; j++) {
-            string clientID = currentTrainer->client[j].clientId;
-            if (!clientID.empty()) {
-                Client* trueClient = findClient(clientID);
-                if (trueClient != nullptr) {
-                    int last = trueClient->measure.count - 1;
-                    cout << "~ ~ ~ ~ ~ ~ ~ ~ \n";
-                    cout << "Client's Name: " << trueClient->cUsername << endl;
-                    cout << "Client's ID: " << trueClient->clientId << endl;
-                    cout << "Client's Weight: " << trueClient->measure.weight[last] << endl;
-                    cout << "Client's Height: " << trueClient->measure.height[last] << endl;
-                    cout << "Client's BMI: " << trueClient->measure.bmi[last] << endl;
-                    for (int w = 0, l = 1; w < SIZE; w++) {
-                        if (trueClient->workoutplans[w].workoutName != "") {
-                            cout << "Workout " << l << " Name: " << trueClient->workoutplans[w].workoutName << endl;
-                            cout << "Workout " << l << " ID: " << trueClient->workoutplans[w].workoutID << endl;
-                            cout << "Client's Progress in This Workout: " << trueClient->progresslogs[w] << endl;
-                            cout << "Number of Exercises in Workout " << l << ": " << trueClient->workoutplans[w].exerciseCount << endl;
-                            l++;
-                            for (int e = 0, q = 1; e < trueClient->workoutplans[w].exerciseCount; e++) {
-                                if (trueClient->workoutplans[w].exercises[e] != "") {
-                                    cout << "Exercise " << q << ": " << trueClient->workoutplans[w].exercises[e] << endl;
-                                    cout << "Exercise " << q << " Duration: " << trueClient->workoutplans[w].duration << endl;
-                                    q++;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                cout << "----------------------------------------\n\n";
-            }
+            else
+                goto QuestionMaking2;
         }
     }
 }
+void mostPlayed()
+{
+    // calculating the frequencies
+    int freq_arr[game_count] = {0};
+    for (int i = 0; i < customers_num; i++)
+    {
+        for (int j = 0; j < resCount; j++)
+        {
+            for (int k = 1; k <= game_count; k++)
+            {
+                if (Custs[i].reservations[j].game == k)
+                    freq_arr[k - 1]++;
+            }
+        }
+    }
+    // adding the frequencies to memory associate it w the games
+    for (int i = 0; i < game_count; i++)
+    {
+        Final_most[i].Mostfrequency = freq_arr[i];
+    }
 
-void clientActions() {
-    string choice;
-    bool running = true;
+    // Replace duplicate numbers in freq_arr with 0, keeping one instance
+    for (int i = 0; i < game_count; i++)
+    {
+        for (int j = i + 1; j < game_count; j++)
+        {
+            if (freq_arr[i] == freq_arr[j] && freq_arr[i] != 0) // Check for duplicates
+            {
+                freq_arr[j] = 0; // Replace duplicate with 0, keeping the first instance
+            }
+        }
+    }
+    // sorting the frequencies
+    for (int i = 0; i < game_count - 1; i++)
+    {
+        for (int j = 0; j < game_count - i - 1; j++)
+        {
+            if (freq_arr[j] < freq_arr[j + 1]) // Sort in descending order
+            {
+                // Swap frequencies
+                int temp = freq_arr[j];
+                freq_arr[j] = freq_arr[j + 1];
+                freq_arr[j + 1] = temp;
+            }
+        }
+    }
 
-    if (loggedInClient == nullptr) {
-        cout << "Error: No client is currently logged in.\n";
+    cout << endl
+         << "The most played games are :\n";
+
+    for (int j = 0; j < 3; j++)
+    {
+        cout << j + 1;
+        if (j == 0)
+            cout << "st place : ";
+        else if (j == 1)
+            cout << "nd place :";
+        else if (j == 2)
+            cout << "rd place : ";
+        for (int i = 0; i < game_count; i++)
+        {
+            if (Final_most[i].Mostfrequency == freq_arr[j] && freq_arr[j] != 0)
+            {
+                cout << Final_most[i].game_name << "\n";
+                cout << "PLAYEDD " << Final_most[i].Mostfrequency << " TIMES\n";
+            }
+            cout <<endl;
+        }
+    }
+}
+void write()
+{
+    ofstream out("customers.txt", ios::out);
+    if (!out.is_open())
+    {
+        cout << "Error opening customers file for writing." << endl;
         return;
     }
 
-    cout << "Client ID: " << loggedInClient->clientId << endl;
+    out << custCount << endl; // Write number of customers first
+    for (int i = 0; i < custCount; i++)
+    {
+        // Write basic customer info
+        out << Custs[i].name << endl;
+        out << Custs[i].ID << endl;
+        out << Custs[i].password << endl;
+        out << Custs[i].nums << endl;
+        out << Custs[i].res << endl; // Number of reservations
 
-    while (running) {
-        cout << "\t\t\t\t\t    Personal Workout Hub\n";
-        cout << "\t\t\t\t\t****************************\n";
-        cout << "Press" << endl;
-        cout << "1. View Assigned Workouts" << endl;
-        cout << "2. Log Completed Workout" << endl;
-        cout << "3. View Workout History" << endl;
-        cout << "4. View Workout Progress Summary" << endl;
-        cout << "5. Add Measurement" << endl;
-        cout << "6. View Measurements" << endl;
-        cout << "0. Exit" << endl;
-        cout << "Enter Your Choice: ";
-        cin >> choice;
-        cout << endl;
-
-        if (choice == "1") {
-            viewAssignedWorkouts(*loggedInClient);
-        }
-        else if (choice == "2") {
-            logCompletedWorkout(*loggedInClient);
-        }
-        else if (choice == "3") {
-            viewWorkoutHistory(*loggedInClient);
-        }
-        else if (choice == "4") {
-            summarizeWorkoutProgress(*loggedInClient);
-        }
-        else if (choice == "5") {
-            addMeasurement(clients, loggedInClient->clientId);
-        }
-        else if (choice == "6") {
-            viewMeasurements(clients, loggedInClient->clientId);
-        }
-        else if (choice == "0") {
-            cout << "Exiting the client menu.\n";
-            running = false;
-            continue;
-        }
-        else {
-            cout << "Invalid choice! Please enter a number between 0 and 6.\n";
-            cout << "----------------------------------------\n\n";
-            continue;
+        // Write phone numbers
+        for (int j = 0; j < Custs[i].nums; j++)
+        {
+            out << Custs[i].phoneNumbers[j] << endl;
         }
 
-        string answer;
-        cout << "Do you want to do another operation? (Y/N)\n";
-        cout << "Enter your answer: ";
-        cin >> answer;
+        // Write security question
+        out << Custs[i].question.no << endl;
+        out << Custs[i].question.ans << endl;
 
-        while (answer != "Y" && answer != "y" && answer != "N" && answer != "n") {
-            cout << "Invalid input! Enter 'Y' to continue or 'N' to exit: ";
-            cin >> answer;
-        }
+        // Write reservations
+        for (int j = 0; j < Custs[i].res; j++)
+        {
+            out << Custs[i].reservations[j].date << endl;
+            out << Custs[i].reservations[j].StartTime << endl;
+            out << Custs[i].reservations[j].StartTimeint << endl;
+            out << Custs[i].reservations[j].EndTimeint << endl;
+            out << Custs[i].reservations[j].EndTime << endl;
+            out << Custs[i].reservations[j].billNumber << endl;
+            out << Custs[i].reservations[j].foodOrderCount << endl;
+            out << Custs[i].reservations[j].drinksOrderCount << endl;
+            out << Custs[i].reservations[j].type << endl;
+            out << Custs[i].reservations[j].time << endl;
+            out << Custs[i].reservations[j].total << endl;
+            out << Custs[i].reservations[j].game << endl;
+            out << Custs[i].reservations[j].gameName << endl;
+            out << Custs[i].reservations[j].clock << endl;
 
-        if (answer == "N" || answer == "n") {
-            cout << "Returning to the main menu.\n";
-            running = false;
+            // Write food orders
+            for (int k = 0; k < Custs[i].reservations[j].foodOrderCount; k++)
+            {
+                out << Custs[i].reservations[j].F[k].name << endl;
+                out << Custs[i].reservations[j].F[k].code << endl;
+                out << Custs[i].reservations[j].F[k].price << endl;
+                out << Custs[i].reservations[j].F[k].quantity << endl;
+            }
+
+            // Write drink orders
+            for (int k = 0; k < Custs[i].reservations[j].drinksOrderCount; k++)
+            {
+                out << Custs[i].reservations[j].D[k].name << endl;
+                out << Custs[i].reservations[j].D[k].code << endl;
+                out << Custs[i].reservations[j].D[k].price << endl;
+                out << Custs[i].reservations[j].D[k].quantity << endl;
+            }
         }
-        cout << "----------------------------------------\n\n";
     }
-}
+    out.close();
 
-void trainerActions() {
-    string choice;
-    bool running = true;
-
-    if (loggedInTrainer == nullptr) {
-        cout << "Error: No trainer is currently logged in.\n";
+    ofstream out2("workers.txt", ios::out);
+    if (!out2.is_open())
+    {
+        cout << "Error opening workers file for writing." << endl;
         return;
     }
 
-    while (running) {
-        cout << "\t\t\t\t\t    Trainer Control Hub\n";
-        cout << "\t\t\t\t\t****************************\n";
-        cout << "Press" << endl;
-        cout << "1. View Your Clients details\n";
-        cout << "2. Add Workout to Client\n";
-        cout << "3. Remove Workout from Client\n";
-        cout << "4. Edit Workout\n";
-        cout << "5. Delete Workout\n";
-        cout << "6. List all Workouts\n";
-        cout << "7. View Assigned Clients for a Workout\n";
-        cout << "0. Go back to the Main Menu\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-        cout << endl;
+    out2 << workCount << endl; // Write number of workers first
+    for (int i = 0; i < workCount; i++)
+    {
+        // Write basic worker info
+        out2 << works[i].name << endl;
+        out2 << works[i].ID << endl;
+        out2 << works[i].password << endl;
+        out2 << works[i].nums << endl;
+        out2 << works[i].res << endl; // Number of reservations
+        out2 << works[i].emp.shift << endl;
+        out2 << works[i].emp.weeklyEarnings << endl;
+        out2 << works[i].emp.monthlyEarnings << endl;
+        out2 << works[i].emp.yearlyEarnings << endl;
 
-
-        if (choice == "1") {
-            cout << "\t***View your Clients Details***\n\n";
-            viewAssignedClients(trainers);
-        }
-        else if (choice == "2") {
-            cout << "\t***Add Workout To Client***\n\n";
-            assignWorkoutToClient(trainers);
-        }
-        else if (choice == "3") {
-            cout << "\t***Remove Workout from Client***\n\n";
-            unassignWorkoutFromClient(trainers);
-        }
-        else if (choice == "4") {
-            cout << "\t***Edit Workout***\n\n";
-            editWorkout();
-        }
-        else if (choice == "5") {
-            cout << "\t***Delete Workout***\n\n";
-            deleteWorkout();
-        }
-        else if (choice == "6") {
-            cout << "\t***List All Workouts***\n\n";
-            listAllWorkouts();
-        }
-        else if (choice == "7") {
-            cout << "\t***View Assigned Clients for a Workout***\n\n";
-            viewAssignedClientsForWorkout(trainers);
-        }
-        else if (choice == "0") {
-            cout << "Returning to the main menu.\n";
-            running = false;
-            continue;
-        }
-        else {
-            cout << "Invalid choice! Please enter a number between 0 and 7.\n";
-            cout << "----------------------------------------\n\n";
-            continue;
+        // Write phone numbers
+        for (int j = 0; j < works[i].nums; j++)
+        {
+            out2 << works[i].phoneNumbers[j] << endl;
         }
 
-        string answer;
-        cout << "Do you want to do another operation? (Y/N)\n";
-        cout << "Enter your answer: ";
-        cin >> answer;
+        // Write security question
+        out2 << works[i].question.no << endl;
+        out2 << works[i].question.ans << endl;
 
-        while (answer != "Y" && answer != "y" && answer != "N" && answer != "n") {
-            cout << "Invalid input! Enter 'Y' to continue or 'N' to exit: ";
-            cin >> answer;
-        }
+        // Write reservations
+        for (int j = 0; j < works[i].res; j++)
+        {
+            out2 << works[i].reservations[j].date << endl;
+            out2 << works[i].reservations[j].StartTime << endl;
+            out2 << works[i].reservations[j].StartTimeint << endl;
+            out2 << works[i].reservations[j].EndTimeint << endl;
+            out2 << works[i].reservations[j].EndTime << endl;
+            out2 << works[i].reservations[j].billNumber << endl;
+            out2 << works[i].reservations[j].foodOrderCount << endl;
+            out2 << works[i].reservations[j].drinksOrderCount << endl;
+            out2 << works[i].reservations[j].type << endl;
+            out2 << works[i].reservations[j].time << endl;
+            out2 << works[i].reservations[j].total << endl;
+            out2 << works[i].reservations[j].game << endl;
+            out2 << works[i].reservations[j].gameName << endl;
+            out2 << works[i].reservations[j].clock << endl;
 
-        if (answer == "N" || answer == "n") {
-            cout << "\nReturning to the main menu.\n";
-            running = false;
-        }
-        cout << "----------------------------------------\n\n";
-    }
-}
-
-
-// Check if the string is a valid whole number using plain ASCII comparison
-bool isValidWholeNumber(const string& input) {
-    if (input.empty()) return false;
-    for (size_t i = 0; i < input.length(); ++i) {
-        if (input[i] < '0' || input[i] > '9') {
-            return false;
-        }
-    }
-    return true;
-}
-
-void takeChoice() {
-    string input;
-    int choice = -1;
-
-    do {
-        mainMenu();
-        cout << "Enter your choice: ";
-        cin >> input;
-
-        if (!isValidWholeNumber(input)) {
-            cout << "Invalid input. Please enter a whole number (no decimals or letters).\n";
-            continue;
-        }
-
-        choice = stoi(input); // conversion after validation
-
-        switch (choice) {
-        case 1:
-            registerClient();
-            break;
-        case 2:
-            registerTrainer();
-            break;
-        case 3: {
-            string loggedInAs = loginUser();
-            if (!loggedInAs.empty()) {
-                cout << "Welcome!\n";
-                if (loggedInAs == "client") {
-                    clientActions();
-                }
-                else if (loggedInAs == "trainer") {
-                    trainerActions();
-                }
+            // Write food orders
+            for (int k = 0; k < works[i].reservations[j].foodOrderCount; k++)
+            {
+                out2 << works[i].reservations[j].F[k].name << endl;
+                out2 << works[i].reservations[j].F[k].code << endl;
+                out2 << works[i].reservations[j].F[k].price << endl;
+                out2 << works[i].reservations[j].F[k].quantity << endl;
             }
-            break;
-        }
-        case 0:
-            cout << "Exiting the application. Goodbye <3 \n";
-            break;
-        default:
-            cout << "Invalid choice. Please try again.\n";
-            break;
-        }
 
-    } while (choice != 0);
+            // Write drink orders
+            for (int k = 0; k < works[i].reservations[j].drinksOrderCount; k++)
+            {
+                out2 << works[i].reservations[j].D[k].name << endl;
+                out2 << works[i].reservations[j].D[k].code << endl;
+                out2 << works[i].reservations[j].D[k].price << endl;
+                out2 << works[i].reservations[j].D[k].quantity << endl;
+            }
+        }
+    }
+    out2.close();
 }
 
-int main() {
-    loadData();
-    cout << "\t\t\t\t\t--- Welcome to our fitness app ---" << endl;
-    takeChoice();
+void read()
+{
+    ifstream in("customers.txt", ios::in);
+    if (!in.is_open())
+    {
+        cout << "No existing customer data found. Starting fresh." << endl;
+        return;
+    }
 
-    return 0;
+    in >> custCount; // Read number of customers
+    for (int i = 0; i < custCount; i++)
+    {
+        // Read basic customer info
+        in >> Custs[i].name;
+        in >> Custs[i].ID;
+        in >> Custs[i].password;
+        in >> Custs[i].nums;
+        in >> Custs[i].res; // Number of reservations
+
+        // Read phone numbers
+        for (int j = 0; j < Custs[i].nums; j++)
+        {
+            in >> Custs[i].phoneNumbers[j];
+        }
+
+        // Read security question
+        in >> Custs[i].question.no;
+        in >> Custs[i].question.ans;
+
+        // Read reservations
+        for (int j = 0; j < Custs[i].res; j++)
+        {
+            in >> Custs[i].reservations[j].date;
+            in >> Custs[i].reservations[j].StartTime;
+            in >> Custs[i].reservations[j].StartTimeint;
+            in >> Custs[i].reservations[j].EndTimeint;
+            in >> Custs[i].reservations[j].EndTime;
+            in >> Custs[i].reservations[j].billNumber;
+            in >> Custs[i].reservations[j].foodOrderCount;
+            in >> Custs[i].reservations[j].drinksOrderCount;
+            in >> Custs[i].reservations[j].type;
+            in >> Custs[i].reservations[j].time;
+            in >> Custs[i].reservations[j].total;
+            in >> Custs[i].reservations[j].game;
+            in >> Custs[i].reservations[j].gameName;
+            in >> Custs[i].reservations[j].clock;
+
+            // Read food orders
+            for (int k = 0; k < Custs[i].reservations[j].foodOrderCount; k++)
+            {
+                in >> Custs[i].reservations[j].F[k].name;
+                in >> Custs[i].reservations[j].F[k].code;
+                in >> Custs[i].reservations[j].F[k].price;
+                in >> Custs[i].reservations[j].F[k].quantity;
+            }
+
+            // Read drink orders
+            for (int k = 0; k < Custs[i].reservations[j].drinksOrderCount; k++)
+            {
+                in >> Custs[i].reservations[j].D[k].name;
+                in >> Custs[i].reservations[j].D[k].code;
+                in >> Custs[i].reservations[j].D[k].price;
+                in >> Custs[i].reservations[j].D[k].quantity;
+            }
+        }
+    }
+    in.close();
+
+    ifstream in2("workers.txt", ios::in);
+    if (!in2.is_open())
+    {
+        cout << "No existing worker data found. Starting fresh." << endl;
+        return;
+    }
+
+    in2 >> workCount; // Read number of workers
+    for (int i = 0; i < workCount; i++)
+    {
+        // Read basic worker info
+        in2 >> works[i].name;
+        in2 >> works[i].ID;
+        in2 >> works[i].password;
+        in2 >> works[i].nums;
+        in2 >> works[i].res; // Number of reservations
+        in2 >> works[i].emp.shift;
+        in2 >> works[i].emp.weeklyEarnings;
+        in2 >> works[i].emp.monthlyEarnings;
+        in2 >> works[i].emp.yearlyEarnings;
+
+        // Read phone numbers
+        for (int j = 0; j < works[i].nums; j++)
+        {
+            in2 >> works[i].phoneNumbers[j];
+        }
+
+        // Read security question
+        in2 >> works[i].question.no;
+        in2 >> works[i].question.ans;
+
+        // Read reservations
+        for (int j = 0; j < works[i].res; j++)
+        {
+            in2 >> works[i].reservations[j].date;
+            in2 >> works[i].reservations[j].StartTime;
+            in2 >> works[i].reservations[j].StartTimeint;
+            in2 >> works[i].reservations[j].EndTimeint;
+            in2 >> works[i].reservations[j].EndTime;
+            in2 >> works[i].reservations[j].billNumber;
+            in2 >> works[i].reservations[j].foodOrderCount;
+            in2 >> works[i].reservations[j].drinksOrderCount;
+            in2 >> works[i].reservations[j].type;
+            in2 >> works[i].reservations[j].time;
+            in2 >> works[i].reservations[j].total;
+            in2 >> works[i].reservations[j].game;
+            in2 >> works[i].reservations[j].gameName;
+            in2 >> works[i].reservations[j].clock;
+
+            // Read food orders
+            for (int k = 0; k < works[i].reservations[j].foodOrderCount; k++)
+            {
+                in2 >> works[i].reservations[j].F[k].name;
+                in2 >> works[i].reservations[j].F[k].code;
+                in2 >> works[i].reservations[j].F[k].price;
+                in2 >> works[i].reservations[j].F[k].quantity;
+            }
+
+            // Read drink orders
+            for (int k = 0; k < works[i].reservations[j].drinksOrderCount; k++)
+            {
+                in2 >> works[i].reservations[j].D[k].name;
+                in2 >> works[i].reservations[j].D[k].code;
+                in2 >> works[i].reservations[j].D[k].price;
+                in2 >> works[i].reservations[j].D[k].quantity;
+            }
+        }
+    }
+    in2.close();
 }
