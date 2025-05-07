@@ -701,9 +701,9 @@ void viewReservationsOfTheDay()
         for (int j = 0; j < Custs[i].res; j++)
         { // Loop over all reservations made by each customer
             // Check if today's date (numericDate) is the same as the date of the reservation (Custs[i].reservations[j].date)
-            if (numericDate == Custs[i].reservations[j].date)
+            if (strcmp(numericDate, Custs[i].reservations[j].date) == 0)
             {
-                cout << "Reservation made by " << Custs[i].name << ", from " << Custs[i].reservations[j].StartTime << " to " << Custs[i].reservations[j].EndTime << "\n";
+                cout << "Reservation made by " << Custs[i].name << ", from " << Custs[i].reservations[j].StartTime << " to " << Custs[i].reservations[j].EndTimeint << ":00" << "\n";
                 numOfReservationsToday++; // Increment the number of reservations made today
             }
         }
