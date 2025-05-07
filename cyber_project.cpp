@@ -864,10 +864,10 @@ DateAndTime:
     if (Custs[constant].reservations[Custs[constant].res].StartTime[2] != ':' ||
         (Custs[constant].reservations[Custs[constant].res].StartTime[0] != '0' &&
          Custs[constant].reservations[Custs[constant].res].StartTime[0] != '1') ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[0] > 9 ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[1] > 9 ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[3] > 9 ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[4] > 9 ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[0] > 57 ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[1] > 57 ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[3] > 57 ||
+         Custs[constant].reservations[Custs[constant].res].StartTime[4] > 57 ||
          cin.peek() == ' ') // Time validation
     {
         cout << "\nInvalid input, try again\n\n";
