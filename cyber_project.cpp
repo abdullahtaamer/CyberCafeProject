@@ -141,14 +141,14 @@ Menu:
     if (question == 1)
     {
         login();
-        void write();
+         write();
         if (!loggedIn)
             goto Menu;
     }
     else if (question == 2)
     {
         registr();
-        void write();
+         write();
         goto Menu;
     }
     else
@@ -171,19 +171,19 @@ LogedIn:
         if (question == 1)
         {
             Reservations();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 2)
         {
             editReservation();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 3)
         {
             viewInformation();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 4)
@@ -201,7 +201,7 @@ LogedIn:
             }
             else if (u1 == 'y' || u1 == 'Y')
             {editReservation();
-                    void write();}
+                     write();}
             else
                 goto LogedIn;
         }
@@ -228,49 +228,49 @@ LogedIn:
         if (question == 1)
         {
             Reservations();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 2)
         {
             editReservation();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 3)
         {
             getTopEmployee(works, constant);
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 4)
         {
             viewInformationE();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 5)
         {
             viewInformationEmployee();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 6)
         {
             mostPlayed();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 7)
         {
             viewReservationsOfTheDay();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 8)
         {
             viewReservationE();
-            void write();
+             write();
             goto LogedIn;
         }
         else if (question == 9)
