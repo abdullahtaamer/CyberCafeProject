@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <vector>
@@ -26,8 +25,6 @@ int reserved_devices = 0; // Number of reserved devices in a single period
 long long ID = 0;
 const int Nfood = 13, Ndrinks = 15, available_Devices = 10;
 float tax = 14;        // Tax of 14%
-int Custsize = 1;      // Ziad hatetha
-int worksize = 1;      // Ziad hatetha
 bool loggedIn = false; // True if the user logged in successfully
 int Most_playedCount = 0;
 bool lamba = true;
@@ -709,7 +706,7 @@ void Reservations()
     IDEnteration:
         cout << "\nThe ID of the customer : ";
         cin >> id;
-        if (cin.fail() || id > custCount || id < 0)
+        if (cin.fail() || id >= custCount || id < 0)
         {
             cout << "Invalid input\n\n"
                  << endl;
@@ -717,7 +714,7 @@ void Reservations()
             cin.ignore(1000, '\n');
             goto IDEnteration;
         }
-        for (int i = 0; i <= custCount; i++)
+        for (int i = 0; i < custCount; i++)
         {
             if (id == Custs[i].ID)
             {
@@ -1725,6 +1722,7 @@ tany2:
     cout << endl
          << "ID:";
     cin >> check.ID;
+    check.ID--;
     if (cin.fail())
     {
         cout << "\nInvalid ID, Try again\n";
@@ -1764,8 +1762,8 @@ stupid2:
     check.password = password3;
     if (i == 1)
     {
-        if (check.ID == -1 || check.ID > custCount)
-        {
+        if (check.ID == -1 || check.ID >= custCount) 
+                {
             cout << "\nInvalid id\n"
                  << endl;
             goto tany2;
@@ -1775,7 +1773,6 @@ stupid2:
             if (check.name == Custs[check.ID].name && check.password == Custs[check.ID].password)
             {
                 cout << "You have logged in successfully!";
-                lamba = false;
                 loggedIn = true;
                 constant = check.ID;
                 storeID = constant;
@@ -1806,7 +1803,7 @@ stupid2:
     }
     else if (i == 2)
     {
-        if (check.ID == -1 || check.ID > workCount)
+        if (check.ID == -1 || check.ID >= workCount)
         {
             cout << "Invalid id" << endl;
             goto tany2;
@@ -2002,7 +1999,7 @@ CustWork:
         cout << endl
              << "Account created successfully!" << endl
              << endl;
-        cout << "Your ID is " << custCount << endl
+        cout << "Your ID is " << custCount+1 << endl
              << endl;
         Custs[custCount].ID = custCount++;
     }
@@ -2140,7 +2137,7 @@ CustWork:
         cout << endl
              << "Account created successfully!" << endl
              << endl;
-        cout << "Your ID is " << workCount << endl
+        cout << "Your ID is " << workCount+1 << endl
              << endl;
         works[workCount].ID = workCount++;
     }
@@ -2208,8 +2205,6 @@ CustomerOrWorker:
                 {
                     continue;
                 }
-                if (ch00 == '\b' && password5.empty())
-                    continue;
                 if (ch00 == '\r')
                 {
                     break;
@@ -2256,7 +2251,7 @@ CustomerOrWorker:
     IDcheck2:
         cout << "Please Enter Your ID:" << endl;
         cin >> check.ID;
-        if (check.ID == -1 || check.ID > worksize)
+        if (check.ID == -1 || check.ID > workCount)
         {
             cout << "invalid id" << endl;
             goto IDcheck2;
