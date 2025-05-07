@@ -3,7 +3,9 @@
 #include <vector>
 #include <conio.h>
 #include <iomanip>
-#include <bits/stdc++.h>
+#include <cmath>
+#include <cstring>
+#include <fstream>
 #include <ctime>
 #define light 3
 #define pastry 7
@@ -119,13 +121,15 @@ void viewInformationEmployee();
 void viewReservation();
 void mostPlayed();
 void viewReservationE();
+void write();
+void read();
 int main()
-{
+{ read();
     // cafeMenu(Nfood, Ndrinks); //m7dsh yfok el comment dahh aw ymsa7o ~Sarah .... Mtz3a'ish ~Abdullah
     int question; //  What does the user want to do
     cout << "Welcome to our paradise ::)\n\n";
 Menu:
-    cout << "\n\nTo log in Press 1\nTo create a new account Press 2\n";
+    cout << "\n\nTo log in Press 1\nTo create a new account Press 2\nTo exit the program Press 3\n";
     cin >> question;
     if (cin.fail())
     {
@@ -137,13 +141,20 @@ Menu:
     if (question == 1)
     {
         login();
+        write();
         if (!loggedIn)
             goto Menu;
     }
     else if (question == 2)
     {
         registr();
+        write();
         goto Menu;
+    }
+    else if (question == 3)
+    {
+        write();
+        return 0;
     }
     else
     {
@@ -165,16 +176,19 @@ LogedIn:
         if (question == 1)
         {
             Reservations();
+            write();
             goto LogedIn;
         }
         else if (question == 2)
         {
             editReservation();
+            write();
             goto LogedIn;
         }
         else if (question == 3)
         {
             viewInformation();
+            write();
             goto LogedIn;
         }
         else if (question == 4)
@@ -191,7 +205,8 @@ LogedIn:
                 goto LogedIn;
             }
             else if (u1 == 'y' || u1 == 'Y')
-                editReservation();
+            {editReservation();
+                    write();}
             else
                 goto LogedIn;
         }
@@ -218,41 +233,49 @@ LogedIn:
         if (question == 1)
         {
             Reservations();
+            write();
             goto LogedIn;
         }
         else if (question == 2)
         {
             editReservation();
+            write();
             goto LogedIn;
         }
         else if (question == 3)
         {
             getTopEmployee(works, constant);
+            write();
             goto LogedIn;
         }
         else if (question == 4)
         {
             viewInformationE();
+            write();
             goto LogedIn;
         }
         else if (question == 5)
         {
             viewInformationEmployee();
+            write();
             goto LogedIn;
         }
         else if (question == 6)
         {
             mostPlayed();
+            write();
             goto LogedIn;
         }
         else if (question == 7)
         {
             viewReservationsOfTheDay();
+            write();
             goto LogedIn;
         }
         else if (question == 8)
         {
             viewReservationE();
+            write();
             goto LogedIn;
         }
         else if (question == 9)
@@ -2407,4 +2430,281 @@ void mostPlayed()
             cout <<endl;
         }
     }
+}
+void write()
+{
+    ofstream out("customers.txt", ios::out);
+    if (!out.is_open())
+    {
+        cout << "Error opening customers file for writing." << endl;
+        return;
+    }
+
+    out << custCount << endl; // Write number of customers first
+    for (int i = 0; i < custCount; i++)
+    {
+        // Write basic customer info
+        out << Custs[i].name << endl;
+        out << Custs[i].ID << endl;
+        out << Custs[i].password << endl;
+        out << Custs[i].nums << endl;
+        out << Custs[i].res << endl; // Number of reservations
+
+        // Write phone numbers
+        for (int j = 0; j < Custs[i].nums; j++)
+        {
+            out << Custs[i].phoneNumbers[j] << endl;
+        }
+
+        // Write security question
+        out << Custs[i].question.no << endl;
+        out << Custs[i].question.ans << endl;
+
+        // Write reservations
+        for (int j = 0; j < Custs[i].res; j++)
+        {
+            out << Custs[i].reservations[j].date << endl;
+            out << Custs[i].reservations[j].StartTime << endl;
+            out << Custs[i].reservations[j].StartTimeint << endl;
+            out << Custs[i].reservations[j].EndTimeint << endl;
+            out << Custs[i].reservations[j].EndTime << endl;
+            out << Custs[i].reservations[j].billNumber << endl;
+            out << Custs[i].reservations[j].foodOrderCount << endl;
+            out << Custs[i].reservations[j].drinksOrderCount << endl;
+            out << Custs[i].reservations[j].type << endl;
+            out << Custs[i].reservations[j].time << endl;
+            out << Custs[i].reservations[j].total << endl;
+            out << Custs[i].reservations[j].game << endl;
+            out << Custs[i].reservations[j].gameName << endl;
+            out << Custs[i].reservations[j].clock << endl;
+
+            // Write food orders
+            for (int k = 0; k < Custs[i].reservations[j].foodOrderCount; k++)
+            {
+                out << Custs[i].reservations[j].F[k].name << endl;
+                out << Custs[i].reservations[j].F[k].code << endl;
+                out << Custs[i].reservations[j].F[k].price << endl;
+                out << Custs[i].reservations[j].F[k].quantity << endl;
+            }
+
+            // Write drink orders
+            for (int k = 0; k < Custs[i].reservations[j].drinksOrderCount; k++)
+            {
+                out << Custs[i].reservations[j].D[k].name << endl;
+                out << Custs[i].reservations[j].D[k].code << endl;
+                out << Custs[i].reservations[j].D[k].price << endl;
+                out << Custs[i].reservations[j].D[k].quantity << endl;
+            }
+        }
+    }
+    out.close();
+
+    ofstream out2("workers.txt", ios::out);
+    if (!out2.is_open())
+    {
+        cout << "Error opening workers file for writing." << endl;
+        return;
+    }
+
+    out2 << workCount << endl; // Write number of workers first
+    for (int i = 0; i < workCount; i++)
+    {
+        // Write basic worker info
+        out2 << works[i].name << endl;
+        out2 << works[i].ID << endl;
+        out2 << works[i].password << endl;
+        out2 << works[i].nums << endl;
+        out2 << works[i].res << endl; // Number of reservations
+        out2 << works[i].emp.shift << endl;
+        out2 << works[i].emp.weeklyEarnings << endl;
+        out2 << works[i].emp.monthlyEarnings << endl;
+        out2 << works[i].emp.yearlyEarnings << endl;
+
+        // Write phone numbers
+        for (int j = 0; j < works[i].nums; j++)
+        {
+            out2 << works[i].phoneNumbers[j] << endl;
+        }
+
+        // Write security question
+        out2 << works[i].question.no << endl;
+        out2 << works[i].question.ans << endl;
+
+        // Write reservations
+        for (int j = 0; j < works[i].res; j++)
+        {
+            out2 << works[i].reservations[j].date << endl;
+            out2 << works[i].reservations[j].StartTime << endl;
+            out2 << works[i].reservations[j].StartTimeint << endl;
+            out2 << works[i].reservations[j].EndTimeint << endl;
+            out2 << works[i].reservations[j].EndTime << endl;
+            out2 << works[i].reservations[j].billNumber << endl;
+            out2 << works[i].reservations[j].foodOrderCount << endl;
+            out2 << works[i].reservations[j].drinksOrderCount << endl;
+            out2 << works[i].reservations[j].type << endl;
+            out2 << works[i].reservations[j].time << endl;
+            out2 << works[i].reservations[j].total << endl;
+            out2 << works[i].reservations[j].game << endl;
+            out2 << works[i].reservations[j].gameName << endl;
+            out2 << works[i].reservations[j].clock << endl;
+
+            // Write food orders
+            for (int k = 0; k < works[i].reservations[j].foodOrderCount; k++)
+            {
+                out2 << works[i].reservations[j].F[k].name << endl;
+                out2 << works[i].reservations[j].F[k].code << endl;
+                out2 << works[i].reservations[j].F[k].price << endl;
+                out2 << works[i].reservations[j].F[k].quantity << endl;
+            }
+
+            // Write drink orders
+            for (int k = 0; k < works[i].reservations[j].drinksOrderCount; k++)
+            {
+                out2 << works[i].reservations[j].D[k].name << endl;
+                out2 << works[i].reservations[j].D[k].code << endl;
+                out2 << works[i].reservations[j].D[k].price << endl;
+                out2 << works[i].reservations[j].D[k].quantity << endl;
+            }
+        }
+    }
+    out2.close();
+}
+
+void read()
+{
+    ifstream in("customers.txt", ios::in);
+    if (!in.is_open())
+    {
+        cout << "No existing customer data found. Starting fresh." << endl;
+        return;
+    }
+
+    in >> custCount; // Read number of customers
+    for (int i = 0; i < custCount; i++)
+    {
+        // Read basic customer info
+        in >> Custs[i].name;
+        in >> Custs[i].ID;
+        in >> Custs[i].password;
+        in >> Custs[i].nums;
+        in >> Custs[i].res; // Number of reservations
+
+        // Read phone numbers
+        for (int j = 0; j < Custs[i].nums; j++)
+        {
+            in >> Custs[i].phoneNumbers[j];
+        }
+
+        // Read security question
+        in >> Custs[i].question.no;
+        in >> Custs[i].question.ans;
+
+        // Read reservations
+        for (int j = 0; j < Custs[i].res; j++)
+        {
+            in >> Custs[i].reservations[j].date;
+            in >> Custs[i].reservations[j].StartTime;
+            in >> Custs[i].reservations[j].StartTimeint;
+            in >> Custs[i].reservations[j].EndTimeint;
+            in >> Custs[i].reservations[j].EndTime;
+            in >> Custs[i].reservations[j].billNumber;
+            in >> Custs[i].reservations[j].foodOrderCount;
+            in >> Custs[i].reservations[j].drinksOrderCount;
+            in >> Custs[i].reservations[j].type;
+            in >> Custs[i].reservations[j].time;
+            in >> Custs[i].reservations[j].total;
+            in >> Custs[i].reservations[j].game;
+            in >> Custs[i].reservations[j].gameName;
+            in >> Custs[i].reservations[j].clock;
+
+            // Read food orders
+            for (int k = 0; k < Custs[i].reservations[j].foodOrderCount; k++)
+            {
+                in >> Custs[i].reservations[j].F[k].name;
+                in >> Custs[i].reservations[j].F[k].code;
+                in >> Custs[i].reservations[j].F[k].price;
+                in >> Custs[i].reservations[j].F[k].quantity;
+            }
+
+            // Read drink orders
+            for (int k = 0; k < Custs[i].reservations[j].drinksOrderCount; k++)
+            {
+                in >> Custs[i].reservations[j].D[k].name;
+                in >> Custs[i].reservations[j].D[k].code;
+                in >> Custs[i].reservations[j].D[k].price;
+                in >> Custs[i].reservations[j].D[k].quantity;
+            }
+        }
+    }
+    in.close();
+
+    ifstream in2("workers.txt", ios::in);
+    if (!in2.is_open())
+    {
+        cout << "No existing worker data found. Starting fresh." << endl;
+        return;
+    }
+
+    in2 >> workCount; // Read number of workers
+    for (int i = 0; i < workCount; i++)
+    {
+        // Read basic worker info
+        in2 >> works[i].name;
+        in2 >> works[i].ID;
+        in2 >> works[i].password;
+        in2 >> works[i].nums;
+        in2 >> works[i].res; // Number of reservations
+        in2 >> works[i].emp.shift;
+        in2 >> works[i].emp.weeklyEarnings;
+        in2 >> works[i].emp.monthlyEarnings;
+        in2 >> works[i].emp.yearlyEarnings;
+
+        // Read phone numbers
+        for (int j = 0; j < works[i].nums; j++)
+        {
+            in2 >> works[i].phoneNumbers[j];
+        }
+
+        // Read security question
+        in2 >> works[i].question.no;
+        in2 >> works[i].question.ans;
+
+        // Read reservations
+        for (int j = 0; j < works[i].res; j++)
+        {
+            in2 >> works[i].reservations[j].date;
+            in2 >> works[i].reservations[j].StartTime;
+            in2 >> works[i].reservations[j].StartTimeint;
+            in2 >> works[i].reservations[j].EndTimeint;
+            in2 >> works[i].reservations[j].EndTime;
+            in2 >> works[i].reservations[j].billNumber;
+            in2 >> works[i].reservations[j].foodOrderCount;
+            in2 >> works[i].reservations[j].drinksOrderCount;
+            in2 >> works[i].reservations[j].type;
+            in2 >> works[i].reservations[j].time;
+            in2 >> works[i].reservations[j].total;
+            in2 >> works[i].reservations[j].game;
+            in2 >> works[i].reservations[j].gameName;
+            in2 >> works[i].reservations[j].clock;
+
+            // Read food orders
+            for (int k = 0; k < works[i].reservations[j].foodOrderCount; k++)
+            {
+                in2 >> works[i].reservations[j].F[k].name;
+                in2 >> works[i].reservations[j].F[k].code;
+                in2 >> works[i].reservations[j].F[k].price;
+                in2 >> works[i].reservations[j].F[k].quantity;
+            }
+
+            // Read drink orders
+            for (int k = 0; k < works[i].reservations[j].drinksOrderCount; k++)
+            {
+                in2 >> works[i].reservations[j].D[k].name;
+                in2 >> works[i].reservations[j].D[k].code;
+                in2 >> works[i].reservations[j].D[k].price;
+                in2 >> works[i].reservations[j].D[k].quantity;
+            }
+        }
+    }
+    in2.close();
 }
