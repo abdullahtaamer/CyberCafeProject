@@ -729,7 +729,7 @@ void Reservations()
     IDEnteration:
         cout << "\nThe ID of the customer : ";
         cin >> id;
-        if (cin.fail() || id >= custCount || id < 0)
+        if (cin.fail() || id > custCount || id < 0)
         {
             cout << "Invalid input\n\n"
                  << endl;

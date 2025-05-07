@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <vector>
@@ -103,9 +104,9 @@ struct game
     int Mostfrequency;
     string game_name;
 };
-game Final_most[game_count] = {{1, 0, "FIFA"}, {2, 0, "PES"}, {3, 0, "MORTAL KOMBAT"}, {4, 0, "GTA V"}, {5, 0, "COD"}, {6, 0, "FALL GUYS"}};
-food f[Nfood] = {{"Cheese", 123, 30, 0}, {"Smoked Turkey", 222, 40, 0}, {"Chicken", 144, 60, 0}, {"Croissant", 555, 40, 0}, {"Puff Pastry", 333, 30, 0}, {"Danish Pastry", 125, 60, 0}, {"Cinnamon Roll", 111, 80, 0}, {"Biscuits or Cookies", 226, 30, 0}, {"Chips or Snacks", 771, 30, 0}, {"Instant Noodles", 126, 40, 0}, {"Mini Pizza", 199, 50, 0}, {"Pan Cakes", 772, 40, 0}, {"Light Burger", 312, 70, 0}};
-drinks d[Ndrinks] = {{"Pepsi", 661, 20, 0}, {"Cocacola", 557, 20, 0}, {"Sprite", 993, 20, 0}, {"Black Tea", 441, 20, 0}, {"Green Tea", 777, 25, 0}, {"Mint Tea", 116, 30, 0}, {"Lemon Tea", 447, 30, 0}, {"Espresso", 221, 40, 0}, {"Amreicano", 551, 50, 0}, {"Cappiccino", 141, 650, 0}, {"Latte", 503, 50, 0}, {"Orange Juice", 460, 30, 0}, {"Mango Juice", 668, 40, 0}, {"Strawberry Juice", 334, 40, 0}, {"Bottelet Water", 445, 15, 0}};
+game Final_most[game_count] = { {1, 0, "FIFA"}, {2, 0, "PES"}, {3, 0, "MORTAL KOMBAT"}, {4, 0, "GTA V"}, {5, 0, "COD"}, {6, 0, "FALL GUYS"} };
+food f[Nfood] = { {"Cheese", 123, 30, 0}, {"Smoked Turkey", 222, 40, 0}, {"Chicken", 144, 60, 0}, {"Croissant", 555, 40, 0}, {"Puff Pastry", 333, 30, 0}, {"Danish Pastry", 125, 60, 0}, {"Cinnamon Roll", 111, 80, 0}, {"Biscuits or Cookies", 226, 30, 0}, {"Chips or Snacks", 771, 30, 0}, {"Instant Noodles", 126, 40, 0}, {"Mini Pizza", 199, 50, 0}, {"Pan Cakes", 772, 40, 0}, {"Light Burger", 312, 70, 0} };
+drinks d[Ndrinks] = { {"Pepsi", 661, 20, 0}, {"Cocacola", 557, 20, 0}, {"Sprite", 993, 20, 0}, {"Black Tea", 441, 20, 0}, {"Green Tea", 777, 25, 0}, {"Mint Tea", 116, 30, 0}, {"Lemon Tea", 447, 30, 0}, {"Espresso", 221, 40, 0}, {"Amreicano", 551, 50, 0}, {"Cappiccino", 141, 650, 0}, {"Latte", 503, 50, 0}, {"Orange Juice", 460, 30, 0}, {"Mango Juice", 668, 40, 0}, {"Strawberry Juice", 334, 40, 0}, {"Bottelet Water", 445, 15, 0} };
 float cafeMenu(int, int);
 void billingSystemCustomer(Reservation res, float tax);
 void Reservations();
@@ -124,7 +125,8 @@ void viewReservationE();
 void write();
 void read();
 int main()
-{ read();
+{
+    read();
     // cafeMenu(Nfood, Ndrinks); //m7dsh yfok el comment dahh aw ymsa7o ~Sarah .... Mtz3a'ish ~Abdullah
     int question; //  What does the user want to do
     cout << "Welcome to our paradise ::)\n\n";
@@ -205,8 +207,10 @@ LogedIn:
                 goto LogedIn;
             }
             else if (u1 == 'y' || u1 == 'Y')
-            {editReservation();
-                    write();}
+            {
+                editReservation();
+                write();
+            }
             else
                 goto LogedIn;
         }
@@ -295,7 +299,7 @@ float cafeMenu(int Nf, int Nd)
 {
     // display the title first
     cout << "\n\n\t\t\t\t\t\t The Cafe Menu\n"
-         << "\t\t\t\t\t\t" << endl;
+        << "\t\t\t\t\t\t" << endl;
 
     int type, code;
     float Totalcost = 0;
@@ -304,7 +308,7 @@ float cafeMenu(int Nf, int Nd)
     while (true)
     {
         cout << " Food menu" << "\n"
-             << " *********" << endl;
+            << " *********" << endl;
         cout << "For light sandwiches press 1" << endl;
         cout << "For Pastry press 2" << endl;
         cout << "For other options press 3" << endl;
@@ -321,7 +325,7 @@ float cafeMenu(int Nf, int Nd)
             for (int i = 0; i < light; i++)
             {
                 cout << endl
-                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
+                    << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
             }
         }
         else if (type == 2)
@@ -329,7 +333,7 @@ float cafeMenu(int Nf, int Nd)
             for (int i = light; i < pastry; i++)
             {
                 cout << endl
-                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
+                    << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
             }
         }
         else if (type == 4)
@@ -337,7 +341,7 @@ float cafeMenu(int Nf, int Nd)
             for (int i = 7; i < Nf; i++)
             {
                 cout << endl
-                     << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
+                    << f[i].name << "\nCode: " << f[i].code << "\nPrice: " << f[i].price << endl;
             }
         }
         else
@@ -350,7 +354,7 @@ float cafeMenu(int Nf, int Nd)
 
             cout << "\nWould you like to show another food category ?" << endl;
             cout << " If yes enter y or anything except n\n"
-                 << " If no enter n\n";
+                << " If no enter n\n";
             cin.ignore();
             cin >> ans;
             if (cin.fail() || (ans != 'n' && ans != 'N' && ans != 'y' && ans != 'Y'))
@@ -371,7 +375,7 @@ float cafeMenu(int Nf, int Nd)
     while (true)
     {
         cout << endl
-        << "\nDrinks menu" << "\n " << "" << endl;
+            << "\nDrinks menu" << "\n " << "" << endl;
         cout << "For Soft Drinks press 1" << endl;
         cout << "For Tea press 2" << endl;
         cout << "For Coffee press 3" << endl;
@@ -391,7 +395,7 @@ float cafeMenu(int Nf, int Nd)
             for (int i = 0; i < light; i++)
             {
                 cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+                    << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
             }
         }
         else if (type == 2)
@@ -399,7 +403,7 @@ float cafeMenu(int Nf, int Nd)
             for (int i = 3; i < pastry; i++)
             {
                 cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+                    << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
             }
         }
         else if (type == 3)
@@ -407,7 +411,7 @@ float cafeMenu(int Nf, int Nd)
             for (int i = pastry; i < 11; i++)
             {
                 cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+                    << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
             }
         }
         else if (type == 4)
@@ -415,7 +419,7 @@ float cafeMenu(int Nf, int Nd)
             for (int i = 11; i < Nd; i++)
             {
                 cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+                    << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
             }
         }
         else if (type == 5)
@@ -423,10 +427,10 @@ float cafeMenu(int Nf, int Nd)
             for (int i = 14; i < Nd; i++)
             {
                 cout << endl
-                     << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
+                    << d[i].name << "\nCode: " << d[i].code << "\nPrice: " << d[i].price << endl;
             }
         }
-        else 
+        else
         {
             cout << "\nInvalid input\n";
             continue;
@@ -435,7 +439,7 @@ float cafeMenu(int Nf, int Nd)
         {
             cout << "\nWould you like to show another drink category ?" << endl;
             cout << " If yes press y or any button\n"
-                 << " If no enter press n\n";
+                << " If no enter press n\n";
             cin >> ans;
             if (cin.fail() || (ans != 'n' && ans != 'N' && ans != 'y' && ans != 'Y'))
             {
@@ -459,7 +463,7 @@ float cafeMenu(int Nf, int Nd)
         while (true)
         {
             cout << endl
-                 << "Please Enter the code of the product you want: ";
+                << "Please Enter the code of the product you want: ";
             cin >> code;
             if (cin.fail())
             {
@@ -513,14 +517,14 @@ float cafeMenu(int Nf, int Nd)
             else if (i == Nfood + Ndrinks - 1 && !found) // w di kman mtensash
             {
                 cout << "Invalid code, please try again.\n"
-                     << endl;
+                    << endl;
             }
         }
         while (true)
         {
             cout << "\n\nWould you like to add another product to your cart?" << endl;
             cout << " If yes enter y\n"
-                 << " If no enter n or anything except y\n";
+                << " If no enter n or anything except y\n";
             cin.ignore();
             cin.get(ans);
             if (cin.fail())
@@ -538,7 +542,7 @@ float cafeMenu(int Nf, int Nd)
     } while (ans == 'y' || ans == 'Y');
     // cout << "Your Total cost is: " << Totalcost << endl;
     cout << "\n\nEnjoy your meal!^_^\n\n"
-         << endl;
+        << endl;
 
     return Totalcost;
 }
@@ -563,20 +567,20 @@ void billingSystemCustomer(Reservation res, float tax)
     cout << "Hi there! Hope you had a great time with us. Here is your bill:" << "\n\n";
 
     cout << setw(37) << left << "PlayStation for " + to_string(res.time) + " hours"  // Time spent playing
-         << setw(10) << left << to_string(int(round(res.total))) + " EGP" << "\n\n"; // PlayStation rent price
+        << setw(10) << left << to_string(int(round(res.total))) + " EGP" << "\n\n"; // PlayStation rent price
 
     cout << "Food & Drinks:" << "\n\n";
     cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
-         << setw(30) << left << "Description"    // Name column header of the food/drink
-         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+        << setw(30) << left << "Description"    // Name column header of the food/drink
+        << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
 
     int totalFoodPrice = 0;
     // Displaying and calculating the total price of the current food using a for loop
     for (int i = 0; i < res.foodOrderCount; i++)
     {                                                                                               // Loop n times the number of the foods ordered
         cout << setw(7) << left << res.F[i].quantity                                                // Display quantity
-             << setw(30) << left << res.F[i].name                                                   // Display name
-             << setw(10) << left << to_string(res.F[i].price * res.F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
+            << setw(30) << left << res.F[i].name                                                   // Display name
+            << setw(10) << left << to_string(res.F[i].price * res.F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
         totalFoodPrice = totalFoodPrice + (res.F[i].price * res.F[i].quantity);                     // Add the current food price to the total price of foods
     }
 
@@ -585,8 +589,8 @@ void billingSystemCustomer(Reservation res, float tax)
     for (int j = 0; j < res.drinksOrderCount; j++)
     {                                                                                               // Loop n times the number of the drinks ordered
         cout << setw(7) << left << res.D[j].quantity                                                // Display quantity
-             << setw(30) << left << res.D[j].name                                                   // Display name
-             << setw(10) << left << to_string(res.D[j].price * res.D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+            << setw(30) << left << res.D[j].name                                                   // Display name
+            << setw(10) << left << to_string(res.D[j].price * res.D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
         totalDrinksPrice = totalDrinksPrice + (res.D[j].price * res.D[j].quantity);                 // Add the current drink price to the total price of drinks
     }
 
@@ -594,10 +598,10 @@ void billingSystemCustomer(Reservation res, float tax)
     float total_price = subtotal + ((tax / 100) * subtotal);        // Calculate total (subtotal + tax)
 
     cout << "\n"
-         << setw(37) << left << "Subtotal"
-         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+        << setw(37) << left << "Subtotal"
+        << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
     cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
-         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+        << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
 
     earnings = total_price;
 }
@@ -684,7 +688,7 @@ void getTopEmployee(customer works[], int shiftIndex)
 void viewReservationsOfTheDay()
 {
     time_t currentTime = time(0);             // Get the current time in seconds (not very human readable)
-    tm *local_time = localtime(&currentTime); // Converts the current time to a more human readable format
+    tm* local_time = localtime(&currentTime); // Converts the current time to a more human readable format
 
     char numericDate[80]; // Will hold the formatted date as a string
     char textDate[80];    // Will hold the formatted date as a string
@@ -729,10 +733,10 @@ void Reservations()
     IDEnteration:
         cout << "\nThe ID of the customer : ";
         cin >> id;
-        if (cin.fail() || id >= custCount || id < 0)
+        if (cin.fail() || id > custCount || id < 0)
         {
             cout << "Invalid input\n\n"
-                 << endl;
+                << endl;
             cin.clear();
             cin.ignore(1000, '\n');
             goto IDEnteration;
@@ -758,9 +762,9 @@ TypeChoice:
     cin >> Custs[constant].reservations[Custs[constant].res].type; // The user chooses the type of reservation
     if (cin.fail() ||
         (Custs[constant].reservations[Custs[constant].res].type != 'M' &&
-         Custs[constant].reservations[Custs[constant].res].type != 'S' &&
-         Custs[constant].reservations[Custs[constant].res].type != 'm' &&
-         Custs[constant].reservations[Custs[constant].res].type != 's')) // Validation to avoid error and unpredictable behaviour
+            Custs[constant].reservations[Custs[constant].res].type != 'S' &&
+            Custs[constant].reservations[Custs[constant].res].type != 'm' &&
+            Custs[constant].reservations[Custs[constant].res].type != 's')) // Validation to avoid error and unpredictable behaviour
     {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -774,7 +778,7 @@ GameChoice:
         Custs[constant].reservations[Custs[constant].res].game < 0) // Game validation
     {
         cout << "Invalid input\n\n"
-             << endl;
+            << endl;
         cin.clear();
         cin.ignore(1000, '\n');
         goto GameChoice;
@@ -863,12 +867,12 @@ DateAndTime:
     cin >> Custs[constant].reservations[Custs[constant].res].StartTime;
     if (Custs[constant].reservations[Custs[constant].res].StartTime[2] != ':' ||
         (Custs[constant].reservations[Custs[constant].res].StartTime[0] != '0' &&
-         Custs[constant].reservations[Custs[constant].res].StartTime[0] != '1') ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[0] > 9 ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[1] > 9 ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[3] > 9 ||
-         Custs[constant].reservations[Custs[constant].res].StartTime[4] > 9 ||
-         cin.peek() == ' ') // Time validation
+            Custs[constant].reservations[Custs[constant].res].StartTime[0] != '1') ||
+        Custs[constant].reservations[Custs[constant].res].StartTime[0] > 57 ||
+        Custs[constant].reservations[Custs[constant].res].StartTime[1] > 57 ||
+        Custs[constant].reservations[Custs[constant].res].StartTime[3] > 57 ||
+        Custs[constant].reservations[Custs[constant].res].StartTime[4] > 57 ||
+        cin.peek() == ' ') // Time validation
     {
         cout << "\nInvalid input, try again\n\n";
         goto DateAndTime;
@@ -896,9 +900,9 @@ DateAndTime:
     cout << "\nYour reservation has been made successfully!\n\n";
     cout << "\nYour reservation number is: " << Custs[constant].reservations[Custs[constant].res].billNumber << endl;
     cout << "Date : "
-         << Custs[constant].reservations[Custs[constant].res].date << endl;
+        << Custs[constant].reservations[Custs[constant].res].date << endl;
     cout << "Time : From " << Custs[constant].reservations[Custs[constant].res].StartTime << " to " << Custs[constant].reservations[Custs[constant].res].EndTimeint << ":00" << endl
-         << endl;
+        << endl;
     billingSystemCustomer(Custs[constant].reservations[Custs[constant].res], tax);
     if (shift)
     {
@@ -931,7 +935,7 @@ Asking:
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "\nInvalid input\n"
-             << endl;
+            << endl;
         goto Asking;
     }
 Passwordo:
@@ -942,7 +946,7 @@ Passwordo:
         char ch88;
         while (true)
         {
-            ch88 = getch();
+            ch88 = _getch();
             if (ch88 == '\b' && password4.empty())
             {
                 continue;
@@ -967,7 +971,7 @@ Passwordo:
         if (currentPassword != Custs[constant].password)
         {
             cout << "\nWrong password\n"
-                 << endl;
+                << endl;
         Askos:
             cout << "To reset your password Press Y\nTo try again press any other button ";
             cin >> ask;     // n
@@ -976,7 +980,7 @@ Passwordo:
                 cin.clear();
                 cin.ignore(1000, '\n');
                 cout << "\nInvalid input\n"
-                     << endl;
+                    << endl;
                 goto Askos;
             }
             if (ask == 'Y' || ask == 'y')
@@ -993,13 +997,13 @@ Passwordo:
             }
         }
         else
-        PasswordMakingV:
-            cout << "Please enter your password: ";
+            PasswordMakingV:
+        cout << "Please enter your password: ";
         string password5;
         char ch888;
         while (true)
         {
-            ch888 = getch();
+            ch888 = _getch();
             if (ch888 == '\b' && password5.empty())
             {
                 continue;
@@ -1026,7 +1030,7 @@ Passwordo:
         char ch889;
         while (true)
         {
-            ch889 = getch();
+            ch889 = _getch();
             if (ch889 == '\b' && password3.empty())
             {
                 continue;
@@ -1051,8 +1055,8 @@ Passwordo:
         if (Custs[constant].password != currentPassword)
         {
             cout << endl
-                 << "///Passwords don't match please double check it///" << endl
-                 << endl;
+                << "///Passwords don't match please double check it///" << endl
+                << endl;
             goto PasswordMakingV;
         }
         else
@@ -1082,7 +1086,7 @@ Asking:
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "\nInvalid input\n"
-             << endl;
+            << endl;
         goto Asking;
     }
 Passwordo:
@@ -1093,7 +1097,7 @@ Passwordo:
         char ch88;
         while (true)
         {
-            ch88 = getch();
+            ch88 = _getch();
             if (ch88 == '\b' && password4.empty())
             {
                 continue;
@@ -1118,7 +1122,7 @@ Passwordo:
         if (currentPassword != works[constant].password)
         {
             cout << "\nWrong password\n"
-                 << endl;
+                << endl;
         Askos:
             cout << "To reset your password Press Y\nTo try again press any other button ";
             cin >> ask;     // n
@@ -1127,7 +1131,7 @@ Passwordo:
                 cin.clear();
                 cin.ignore(1000, '\n');
                 cout << "\nInvalid input\n"
-                     << endl;
+                    << endl;
                 goto Askos;
             }
             if (ask == 'Y' || ask == 'y')
@@ -1144,13 +1148,13 @@ Passwordo:
             }
         }
         else
-        PasswordMakingV:
-            cout << "Please enter your password: ";
+            PasswordMakingV:
+        cout << "Please enter your password: ";
         string password5;
         char ch888;
         while (true)
         {
-            ch888 = getch();
+            ch888 = _getch();
             if (ch888 == '\b' && password5.empty())
             {
                 continue;
@@ -1177,7 +1181,7 @@ Passwordo:
         char ch889;
         while (true)
         {
-            ch889 = getch();
+            ch889 = _getch();
             if (ch889 == '\b' && password3.empty())
             {
                 continue;
@@ -1202,8 +1206,8 @@ Passwordo:
         if (works[constant].password != currentPassword)
         {
             cout << endl
-                 << "///Passwords don't match please double check it///" << endl
-                 << endl;
+                << "///Passwords don't match please double check it///" << endl
+                << endl;
             goto PasswordMakingV;
         }
         else
@@ -1226,7 +1230,7 @@ TakingIDVE:
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "\nInvalid input\n"
-             << endl;
+            << endl;
         goto TakingIDVE;
     }
     for (int i = 0; i < customers_num; i++)
@@ -1254,7 +1258,7 @@ AskingVE:
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "\nInvalid input\n"
-             << endl;
+            << endl;
         goto AskingVE;
     }
 PasswordoVE:
@@ -1265,7 +1269,7 @@ PasswordoVE:
         char ch88;
         while (true)
         {
-            ch88 = getch();
+            ch88 = _getch();
             if (ch88 == '\b' && password3.empty())
             {
                 continue;
@@ -1290,7 +1294,7 @@ PasswordoVE:
         if (currentPassword != Custs[IDD].password)
         {
             cout << "\nWrong password\n"
-                 << endl;
+                << endl;
         AskosVE:
             cout << "To reset the password Press Y\nTo try again press any other button ";
             cin >> ask;     // n
@@ -1299,7 +1303,7 @@ PasswordoVE:
                 cin.clear();
                 cin.ignore(1000, '\n');
                 cout << "\nInvalid input\n"
-                     << endl;
+                    << endl;
                 goto AskosVE;
             }
             if (ask == 'Y' || ask == 'y')
@@ -1316,13 +1320,13 @@ PasswordoVE:
             }
         }
         else
-        PasswordMakingVE:
-            cout << "Please enter the password: ";
+            PasswordMakingVE:
+        cout << "Please enter the password: ";
         string password33;
         char ch887;
         while (true)
         {
-            ch887 = getch();
+            ch887 = _getch();
             if (ch887 == '\b' && password33.empty())
             {
                 continue;
@@ -1349,7 +1353,7 @@ PasswordoVE:
         char ch8877;
         while (true)
         {
-            ch8877 = getch();
+            ch8877 = _getch();
             if (ch8877 == '\b' && password334.empty())
             {
                 continue;
@@ -1374,8 +1378,8 @@ PasswordoVE:
         if (Custs[IDD].password != currentPassword)
         {
             cout << endl
-                 << "///Passwords don't match please double check it///" << endl
-                 << endl;
+                << "///Passwords don't match please double check it///" << endl
+                << endl;
             goto PasswordMakingVE;
         }
         else
@@ -1417,26 +1421,26 @@ Bill:
     cout << "Date : " << Custs[constant].reservations[billy].date << endl;
     cout << "From " << Custs[constant].reservations[billy].StartTime << " : 00" << endl;
     cout << "To " << Custs[constant].reservations[billy].EndTime << " : 00" << endl
-         << endl
-         << endl;
+        << endl
+        << endl;
     cout << "Cafe orders :" << endl
-         << endl;
+        << endl;
 
     cout << setw(37) << left << "PlayStation for " + to_string(Custs[constant].reservations[billy].time) + " hours"  // Time spent playing
-         << setw(10) << left << to_string(int(round(Custs[constant].reservations[billy].total))) + " EGP" << "\n\n"; // PlayStation rent price
+        << setw(10) << left << to_string(int(round(Custs[constant].reservations[billy].total))) + " EGP" << "\n\n"; // PlayStation rent price
 
     cout << "Food & Drinks:" << "\n\n";
     cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
-         << setw(30) << left << "Description"    // Name column header of the food/drink
-         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+        << setw(30) << left << "Description"    // Name column header of the food/drink
+        << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
 
     int totalFoodPrice = 0;
     // Displaying and calculating the total price of the current food using a for loop
     for (int i = 0; i < Custs[constant].reservations[billy].foodOrderCount; i++)
     {                                                                                                                                                               // Loop n times the number of the foods ordered
         cout << setw(7) << left << Custs[constant].reservations[billy].F[i].quantity                                                                                // Display quantity
-             << setw(30) << left << Custs[constant].reservations[billy].F[i].name                                                                                   // Display name
-             << setw(10) << left << to_string(Custs[constant].reservations[billy].F[i].price * Custs[constant].reservations[billy].F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
+            << setw(30) << left << Custs[constant].reservations[billy].F[i].name                                                                                   // Display name
+            << setw(10) << left << to_string(Custs[constant].reservations[billy].F[i].price * Custs[constant].reservations[billy].F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
         totalFoodPrice = totalFoodPrice + (Custs[constant].reservations[billy].F[i].price * Custs[constant].reservations[billy].F[i].quantity);                     // Add the current food price to the total price of foods
     }
 
@@ -1445,8 +1449,8 @@ Bill:
     for (int j = 0; j < Custs[constant].reservations[billy].drinksOrderCount; j++)
     {                                                                                                                                                               // Loop n times the number of the drinks ordered
         cout << setw(7) << left << Custs[constant].reservations[billy].D[j].quantity                                                                                // Display quantity
-             << setw(30) << left << Custs[constant].reservations[billy].D[j].name                                                                                   // Display name
-             << setw(10) << left << to_string(Custs[constant].reservations[billy].D[j].price * Custs[constant].reservations[billy].D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+            << setw(30) << left << Custs[constant].reservations[billy].D[j].name                                                                                   // Display name
+            << setw(10) << left << to_string(Custs[constant].reservations[billy].D[j].price * Custs[constant].reservations[billy].D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
         totalDrinksPrice = totalDrinksPrice + (Custs[constant].reservations[billy].D[j].price * Custs[constant].reservations[billy].D[j].quantity);                 // Add the current drink price to the total price of drinks
     }
 
@@ -1454,10 +1458,10 @@ Bill:
     float total_price = subtotal + ((tax / 100) * subtotal);                                        // Calculate total (subtotal + tax)
 
     cout << "\n"
-         << setw(37) << left << "Subtotal"
-         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+        << setw(37) << left << "Subtotal"
+        << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
     cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
-         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+        << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
 
     cout << "\n\nTo view any reservation Press Y\nTo go back press any other button\n";
     cin >> ans;
@@ -1503,26 +1507,26 @@ BillE:
     cout << "Date : " << Custs[IDD].reservations[billy].date << endl;
     cout << "From " << Custs[IDD].reservations[billy].StartTime << " : 00" << endl;
     cout << "To " << Custs[IDD].reservations[billy].EndTime << " : 00" << endl
-         << endl
-         << endl;
+        << endl
+        << endl;
     cout << "Cafe orders :" << endl
-         << endl;
+        << endl;
 
     cout << setw(37) << left << "PlayStation for " + to_string(Custs[IDD].reservations[billy].time) + " hours"  // Time spent playing
-         << setw(10) << left << to_string(int(round(Custs[IDD].reservations[billy].total))) + " EGP" << "\n\n"; // PlayStation rent price
+        << setw(10) << left << to_string(int(round(Custs[IDD].reservations[billy].total))) + " EGP" << "\n\n"; // PlayStation rent price
 
     cout << "Food & Drinks:" << "\n\n";
     cout << setw(7) << left << "QTY"             // Quantity column header of the food/drink
-         << setw(30) << left << "Description"    // Name column header of the food/drink
-         << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
+        << setw(30) << left << "Description"    // Name column header of the food/drink
+        << setw(10) << left << "Price" << "\n"; // Price column header of the food/drink
 
     int totalFoodPrice = 0;
     // Displaying and calculating the total price of the current food using a for loop
     for (int i = 0; i < Custs[IDD].reservations[billy].foodOrderCount; i++)
     {                                                                                                                                                     // Loop n times the number of the foods ordered
         cout << setw(7) << left << Custs[IDD].reservations[billy].F[i].quantity                                                                           // Display quantity
-             << setw(30) << left << Custs[IDD].reservations[billy].F[i].name                                                                              // Display name
-             << setw(10) << left << to_string(Custs[IDD].reservations[billy].F[i].price * Custs[IDD].reservations[billy].F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
+            << setw(30) << left << Custs[IDD].reservations[billy].F[i].name                                                                              // Display name
+            << setw(10) << left << to_string(Custs[IDD].reservations[billy].F[i].price * Custs[IDD].reservations[billy].F[i].quantity) + " EGP" << "\n"; // Display and calculate price (food price * quantity)
         totalFoodPrice = totalFoodPrice + (Custs[IDD].reservations[billy].F[i].price * Custs[IDD].reservations[billy].F[i].quantity);                     // Add the current food price to the total price of foods
     }
 
@@ -1531,8 +1535,8 @@ BillE:
     for (int j = 0; j < Custs[IDD].reservations[billy].drinksOrderCount; j++)
     {                                                                                                                                                     // Loop n times the number of the drinks ordered
         cout << setw(7) << left << Custs[IDD].reservations[billy].D[j].quantity                                                                           // Display quantity
-             << setw(30) << left << Custs[IDD].reservations[billy].D[j].name                                                                              // Display name
-             << setw(10) << left << to_string(Custs[IDD].reservations[billy].D[j].price * Custs[IDD].reservations[billy].D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
+            << setw(30) << left << Custs[IDD].reservations[billy].D[j].name                                                                              // Display name
+            << setw(10) << left << to_string(Custs[IDD].reservations[billy].D[j].price * Custs[IDD].reservations[billy].D[j].quantity) + " EGP" << "\n"; // Display and calculate price (drink price * quantity)
         totalDrinksPrice = totalDrinksPrice + (Custs[IDD].reservations[billy].D[j].price * Custs[IDD].reservations[billy].D[j].quantity);                 // Add the current drink price to the total price of drinks
     }
 
@@ -1540,10 +1544,10 @@ BillE:
     float total_price = subtotal + ((tax / 100) * subtotal);                                   // Calculate total (subtotal + tax)
 
     cout << "\n"
-         << setw(37) << left << "Subtotal"
-         << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
+        << setw(37) << left << "Subtotal"
+        << setw(10) << left << to_string(int(round(subtotal))) + " EGP" << "\n"; // Display subtotal (total price without the tax)
     cout << setw(37) << left << "Total (including " + to_string(int(round(tax))) + "% tax)"
-         << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
+        << setw(10) << left << to_string(int(round(total_price))) + " EGP"; // Display total (total price WITH the tax)
 
     cout << "\n\nTo view any reservation Press Y\nTo go back press any other button\n";
     cin >> ans;
@@ -1603,9 +1607,9 @@ Billoo:
             cin >> Custs[constant].reservations[billy].type; // The user chooses the type of reservation
             if (cin.fail() ||
                 (Custs[constant].reservations[billy].type != 'M' &&
-                 Custs[constant].reservations[billy].type != 'S' &&
-                 Custs[constant].reservations[billy].type != 'm' &&
-                 Custs[constant].reservations[billy].type != 's')) // Validation to avoid error and unpredictable behaviour
+                    Custs[constant].reservations[billy].type != 'S' &&
+                    Custs[constant].reservations[billy].type != 'm' &&
+                    Custs[constant].reservations[billy].type != 's')) // Validation to avoid error and unpredictable behaviour
             {
                 cin.clear();
                 cin.ignore(1000, '\n');
@@ -1666,9 +1670,14 @@ Billoo:
             cout << "Enter the start time of the reservation in the following form ( hh:00 ) " << endl;
 
             cin >> Custs[constant].reservations[billy].StartTime;
-            if (Custs[constant].reservations[billy].clock[2] != ':' ||
-                (Custs[constant].reservations[billy].clock[0] != '0' &&
-                 Custs[constant].reservations[billy].clock[0] != '1')) // Time validation
+            if (Custs[constant].reservations[Custs[constant].res].StartTime[2] != ':' ||
+                (Custs[constant].reservations[Custs[constant].res].StartTime[0] != '0' &&
+                    Custs[constant].reservations[Custs[constant].res].StartTime[0] != '1') ||
+                Custs[constant].reservations[Custs[constant].res].StartTime[0] > 57 ||
+                Custs[constant].reservations[Custs[constant].res].StartTime[1] > 57 ||
+                Custs[constant].reservations[Custs[constant].res].StartTime[3] > 57 ||
+                Custs[constant].reservations[Custs[constant].res].StartTime[4] > 57 ||
+                cin.peek() == ' ') // Time validation
             {
                 cout << "\n\nInvalid input, try again\n\n";
                 goto DateAndTime;
@@ -1694,7 +1703,7 @@ Billoo:
         // leave this part right where it issss
     Repetition:
         cout << endl
-             << "To edit more information Press Y\nIf not Press any other button\n"; // repetition
+            << "To edit more information Press Y\nIf not Press any other button\n"; // repetition
         cin >> ans;
         if (cin.fail())
         {
@@ -1708,9 +1717,9 @@ Billoo:
             cout << "Information updated successfully\n";
             cout << "\nYour reservation number is: " << Custs[constant].reservations[billy].billNumber << endl;
             cout << "Date : "
-                 << Custs[constant].reservations[billy].date << endl;
+                << Custs[constant].reservations[billy].date << endl;
             cout << "Time : From " << Custs[constant].reservations[billy].clock << " to " << Custs[constant].reservations[billy].EndTime << ":00" << endl
-                 << endl;
+                << endl;
         }
 
     } while (ans == 'y' || ans == 'Y');
@@ -1723,7 +1732,7 @@ int login()
     check.ID = -1;
 tany2:
     cout << "Who are you?" << endl
-         << "Customer = 1 , Worker = 2" << endl;
+        << "Customer = 1 , Worker = 2" << endl;
     cin >> i;
     if ((i != 1 && i != 2) || cin.fail())
     {
@@ -1743,7 +1752,7 @@ tany2:
         goto tany2;
     }
     cout << endl
-         << "ID:";
+        << "ID:";
     cin >> check.ID;
     check.ID--;
     if (cin.fail())
@@ -1755,13 +1764,13 @@ tany2:
     }
 stupid2:
     cout << endl
-         << "password:";
+        << "password:";
 
     string password3;
     char ch88;
     while (true)
     {
-        ch88 = getch();
+        ch88 = _getch();
         if (ch88 == '\b' && password3.empty())
         {
             continue;
@@ -1785,10 +1794,10 @@ stupid2:
     check.password = password3;
     if (i == 1)
     {
-        if (check.ID == -1 || check.ID >= custCount) 
-                {
+        if (check.ID == -1 || check.ID >= custCount)
+        {
             cout << "\nInvalid id\n"
-                 << endl;
+                << endl;
             goto tany2;
         }
         else
@@ -1803,7 +1812,7 @@ stupid2:
             else
             {
                 cout << "\nWrong Credentials!\n"
-                     << endl;
+                    << endl;
             passso:
                 cout << "Forgot your password ? press Y\nTo go back to main menu press M\nTo try again Press any other button\n";
                 cin >> pass;
@@ -1845,7 +1854,7 @@ stupid2:
             else
             {
                 cout << "\nWrong Credentials!\n"
-                     << endl;
+                    << endl;
                 cout << "Forgot your password ? press Y\nTo go back to main menu press M\nTo try again Press any other button\n";
                 cin >> pass;
                 if (pass == 'y' || pass == 'Y')
@@ -1873,14 +1882,14 @@ void registr()
     string reenter_Pass; // Let the user reenter his password to check it.
 CustWork:
     cout << "Who are you?" << endl
-         << "Press 1 for Customer and 2 for worker. ";
+        << "Press 1 for Customer and 2 for worker. ";
     cin >> i;
     if (cin.fail())
     {
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "Invalid input\n"
-             << endl;
+            << endl;
         goto CustWork;
     }
     if (i == 1)
@@ -1927,7 +1936,7 @@ CustWork:
         char ch55;
         while (true)
         {
-            ch55 = getch();
+            ch55 = _getch();
             if (ch55 == '\b' && password1.empty())
             {
                 continue;
@@ -1964,7 +1973,7 @@ CustWork:
         char ch66;
         while (true)
         {
-            ch66 = getch();
+            ch66 = _getch();
             if (ch66 == '\b' && password2.empty())
             {
                 continue;
@@ -1990,16 +1999,16 @@ CustWork:
         if (Custs[custCount].password != reenter_Pass || cin.peek() == ' ')
         {
             cout << endl
-                 << "///Passwords don't match please double check it///" << endl
-                 << endl;
+                << "///Passwords don't match please double check it///" << endl
+                << endl;
             goto PasswordMaking;
         }
     Questions:
         int q; // Which question does the user want
         cout << "Choose a question (This question will be used when you reset your password)" << endl
-             << "What's your first Pet Name?=1" << endl
-             << "What's your first Love Name?=2" << endl
-             << "What's your fav Color?=3" << endl;
+            << "What's your first Pet Name?=1" << endl
+            << "What's your first Love Name?=2" << endl
+            << "What's your fav Color?=3" << endl;
         cin >> q;
         if ((q != 1 && q != 2 && q != 3) || cin.fail())
         {
@@ -2020,10 +2029,10 @@ CustWork:
             goto Questions2;
         }
         cout << endl
-             << "Account created successfully!" << endl
-             << endl;
-        cout << "Your ID is " << custCount+1 << endl
-             << endl;
+            << "Account created successfully!" << endl
+            << endl;
+        cout << "Your ID is " << custCount + 1 << endl
+            << endl;
         Custs[custCount].ID = custCount++;
     }
     else if (i == 2)
@@ -2070,7 +2079,7 @@ CustWork:
         char ch99;
         while (true)
         {
-            ch99 = getch();
+            ch99 = _getch();
             if (ch99 == '\b' && password4.empty())
                 continue;
             if (ch99 == '\r')
@@ -2104,7 +2113,7 @@ CustWork:
         char ch22;
         while (true)
         {
-            ch22 = getch();
+            ch22 = _getch();
             if (ch22 == '\b' && password7.empty())
                 continue;
             if (ch22 == '\r')
@@ -2128,16 +2137,16 @@ CustWork:
         if (works[workCount].password != reenter_Pass || cin.peek() == ' ')
         {
             cout << endl
-                 << "///Passwords don't match please double check it///" << endl
-                 << endl;
+                << "///Passwords don't match please double check it///" << endl
+                << endl;
             goto PasswordMaking2;
         }
     Questions222:
         int q; // Which question does the user want
         cout << "Choose a question (This question will be used when you reset your password)" << endl
-             << "What's your first Pet Name? = 1" << endl
-             << "What's your first Love Name? = 2" << endl
-             << "What's your fav Color? = 3" << endl;
+            << "What's your first Pet Name? = 1" << endl
+            << "What's your first Love Name? = 2" << endl
+            << "What's your fav Color? = 3" << endl;
         cin >> q;
         if ((q != 1 && q != 2 && q != 3) || cin.fail())
         {
@@ -2158,10 +2167,10 @@ CustWork:
             goto Questions22;
         }
         cout << endl
-             << "Account created successfully!" << endl
-             << endl;
-        cout << "Your ID is " << workCount+1 << endl
-             << endl;
+            << "Account created successfully!" << endl
+            << endl;
+        cout << "Your ID is " << workCount + 1 << endl
+            << endl;
         works[workCount].ID = workCount++;
     }
     else
@@ -2179,7 +2188,7 @@ void forgot()
 
 CustomerOrWorker:
     cout << "Who are you?" << endl
-         << "Customer = 1 , Worker = 2" << endl;
+        << "Customer = 1 , Worker = 2" << endl;
     cin >> i;
     if ((i != 1 && i != 2) || cin.fail())
     {
@@ -2209,7 +2218,7 @@ CustomerOrWorker:
         if (cin.peek() == ' ')
         {
             cout << "Your answer can't include spaces \n"
-                 << endl;
+                << endl;
             cin.clear();
             cin.ignore(1000, '\n');
             goto QuestionMaking;
@@ -2223,7 +2232,7 @@ CustomerOrWorker:
             char ch00;
             while (true)
             {
-                ch00 = getch();
+                ch00 = _getch();
                 if (ch00 == '\b' && password5.empty())
                 {
                     continue;
@@ -2290,7 +2299,7 @@ CustomerOrWorker:
         if (cin.peek() == ' ')
         {
             cout << "Your answer can't include spaces \n"
-                 << endl;
+                << endl;
             cin.clear();
             cin.ignore(1000, '\n');
             goto QuestionMaking2;
@@ -2304,7 +2313,7 @@ CustomerOrWorker:
             char ch11;
             while (true)
             {
-                ch11 = getch();
+                ch11 = _getch();
                 if (ch11 == '\b' && password6.empty())
                     continue;
                 if (ch11 == '\r')
@@ -2340,7 +2349,7 @@ CustomerOrWorker:
         else
         {
             cout << "Invalid answer please try again\n"
-                 << endl;
+                << endl;
         checkoo:
             cout << "If you don't remember your answer Press Y\nIf not Press any other button\n";
             cin >> checkk;
@@ -2364,7 +2373,7 @@ CustomerOrWorker:
 void mostPlayed()
 {
     // calculating the frequencies
-    int freq_arr[game_count] = {0};
+    int freq_arr[game_count] = { 0 };
     for (int i = 0; i < customers_num; i++)
     {
         for (int j = 0; j < resCount; j++)
@@ -2409,7 +2418,7 @@ void mostPlayed()
     }
 
     cout << endl
-         << "The most played games are :\n";
+        << "The most played games are :\n";
 
     for (int j = 0; j < 3; j++)
     {
@@ -2427,7 +2436,7 @@ void mostPlayed()
                 cout << Final_most[i].game_name << "\n";
                 cout << "PLAYEDD " << Final_most[i].Mostfrequency << " TIMES\n";
             }
-            cout <<endl;
+            cout << endl;
         }
     }
 }
