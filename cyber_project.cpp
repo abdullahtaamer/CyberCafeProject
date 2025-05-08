@@ -105,7 +105,7 @@ struct game
 };
 game Final_most[game_count] = {{1, 0, "FIFA"}, {2, 0, "PES"}, {3, 0, "MORTAL KOMBAT"}, {4, 0, "GTA V"}, {5, 0, "COD"}, {6, 0, "FALL GUYS"}};
 food f[Nfood] = {{"Cheese", 123, 30, 0}, {"Smoked Turkey", 222, 40, 0}, {"Chicken", 144, 60, 0}, {"Croissant", 555, 40, 0}, {"Puff Pastry", 333, 30, 0}, {"Danish Pastry", 125, 60, 0}, {"Cinnamon Roll", 111, 80, 0}, {"Biscuits or Cookies", 226, 30, 0}, {"Chips or Snacks", 771, 30, 0}, {"Instant Noodles", 126, 40, 0}, {"Mini Pizza", 199, 50, 0}, {"Pan Cakes", 772, 40, 0}, {"Light Burger", 312, 70, 0}};
-drinks d[Ndrinks] = {{"Pepsi", 661, 20, 0}, {"Cocacola", 557, 20, 0}, {"Sprite", 993, 20, 0}, {"Black Tea", 441, 20, 0}, {"Green Tea", 777, 25, 0}, {"Mint Tea", 116, 30, 0}, {"Lemon Tea", 447, 30, 0}, {"Espresso", 221, 40, 0}, {"Amreicano", 551, 50, 0}, {"Cappiccino", 141, 650, 0}, {"Latte", 503, 50, 0}, {"Orange Juice", 460, 30, 0}, {"Mango Juice", 668, 40, 0}, {"Strawberry Juice", 334, 40, 0}, {"Bottelet Water", 445, 15, 0}};
+drinks d[Ndrinks] = {{"Pepsi", 661, 20, 0}, {"Cocacola", '9', 20, 0}, {"Sprite", 993, 20, 0}, {"Black Tea", 441, 20, 0}, {"Green Tea", 777, 25, 0}, {"Mint Tea", 116, 30, 0}, {"Lemon Tea", 447, 30, 0}, {"Espresso", 221, 40, 0}, {"Amreicano", 551, 50, 0}, {"Cappiccino", 141, 650, 0}, {"Latte", 503, 50, 0}, {"Orange Juice", 460, 30, 0}, {"Mango Juice", 668, 40, 0}, {"Strawberry Juice", 334, 40, 0}, {"Bottelet Water", 445, 15, 0}};
 float cafeMenu(int, int);
 void billingSystemCustomer(Reservation res, float tax);
 void Reservations();
@@ -129,10 +129,12 @@ int main()
 { read();
     // cafeMenu(Nfood, Ndrinks); //m7dsh yfok el comment dahh aw ymsa7o ~Sarah .... Mtz3a'ish ~Abdullah
     int question; //  What does the user want to do
-    cout << "Welcome to our paradise ::)\n\n";
+    cout << "Welcome to our paradise ::)\n";
 Menu:
     cout << "\n\nTo log in Press 1\nTo create a new account Press 2\nTo exit the program Press 3\n";
+    cout <<"\nEnter your choice : ";
     cin >> question;
+    cout << "\n===========================\n";
     if (cin.fail())
     {
         cin.clear();
@@ -167,6 +169,7 @@ LogedIn:
     if (loggedIn && i != 2)
     {
         cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view your information Press 3\nTo view your reservations Press 4\nTo log out Press 5\n";
+        cout <<"\nEnter your choice : ";
         cin >> question;
         if (cin.fail())
         {
@@ -198,6 +201,7 @@ LogedIn:
             viewReservation();
             cout << "\n\nDo you want to edit your reservation ?\npress Y if YES\nTo go back to main menu Press any other button\n";
             char u1; // u is for answerrs
+            cout <<"\nEnter your choice : ";
             cin >> u1;
             if (cin.fail()) // validation w yarab yb'a sa7 ~ Sarah ... ghlt tb3n ykhrebet elly 3alemek brmaga bs ana khlas zabataha ~Abdullah
             {
@@ -224,6 +228,7 @@ LogedIn:
     else
     {
         cout << "\n\nTo make a new reservation Press 1\nTo edit your reservation Press 2\nTo view the employee of the week/month/year press 3\nTo view your information Press 4\nTo view a customer's information Press 5\nTo view the most played games Press 6\nTo view reservations of the day Press 7\nTo view a reservation Press 8\nTo log out Press 9 \n";
+        cout <<"\nEnter your choice : ";
         cin >> question;
         if (cin.fail())
         {
@@ -1210,7 +1215,7 @@ void viewInformationEmployee()
 TakingIDVE:
     cout << "Enter the ID of the customer : ";
     cin >> IDD;
-    if (cin.fail())
+    if (cin.fail()) // custs : 2 , custcount : 2 , entered :
     {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -1218,6 +1223,14 @@ TakingIDVE:
              << endl;
         goto TakingIDVE;
     }
+    IDD --;
+    if (IDD > custCount)
+    {
+        cout << "\nInvalid input\n"
+        << endl;
+   goto TakingIDVE;
+    }
+    
     for (int i = 0; i < customers_num; i++)
     {
         if (IDD != Custs[i].ID && i == customers_num - 1)
@@ -1388,7 +1401,7 @@ void viewReservation()
 Bill:
     cout << "Enter the bill number : ";
     cin >> billy;
-    if (cin.fail())
+    if (cin.fail() || billy < 0 || billy >= resCount )
     {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -1471,9 +1484,16 @@ BillE:
         cout << "\nInvalid input\n\n";
         goto BillE;
     }
+    IDD--;
+    if (IDD < 0 || IDD > custCount)
+    {
+        cout << "\nInvalid input\n\n";
+        goto BillE;
+    }
+    
     cout << "Enter the bill number : ";
     cin >> billy;
-    if (cin.fail())
+    if (cin.fail() || billy < 0 || billy >= resCount)
     {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -1548,7 +1568,7 @@ void editReservation()
 Billoo:
     cout << "Enter the bill number : ";
     cin >> billy;
-    if (cin.fail())
+    if (cin.fail() || billy < 0 || billy >= Custs[constant].res )
     {
         cin.clear();
         cin.ignore(1000, '\n');
@@ -1855,6 +1875,7 @@ void registr()
 CustWork:
     cout << "Who are you?" << endl
          << "Press 1 for Customer and 2 for worker. ";
+         cout <<"\nEnter your choice : ";
     cin >> i;
     if (cin.fail())
     {
@@ -1894,7 +1915,7 @@ CustWork:
         PhoneNumbering:
             cout << "Phone number: " << endl;
             cin >> Custs[custCount].phoneNumbers[i];
-            if (cin.peek() == ' ' || Custs[custCount].phoneNumbers[nums] < 1000000000 || Custs[custCount].phoneNumbers[nums] > 1999999999)
+            if (cin.peek() == ' ' || Custs[custCount].phoneNumbers[i] < 1000000000 || Custs[custCount].phoneNumbers[i] > 1999999999) // 1123077758
             {
                 cout << "Your phone number is invalid" << endl;
                 cin.clear();
@@ -2416,13 +2437,13 @@ void mostPlayed()
 
 bool timeValidation (char StartTime[]) //Baby function
 {
-    if (Custs[constant].reservations[Custs[constant].res].StartTime[2] != ':' ||
+    if ( StartTime[2] != ':' ||
         (StartTime[0] != '0' &&
          StartTime[0] != '1') ||
-         StartTime[0] > 57 ||
-         StartTime[1] > 57 ||
-         StartTime[3] > 57 ||
-         StartTime[4] > 57 ||
+         StartTime[0] > '9' ||
+         StartTime[1] > '9' ||
+         StartTime[3] > '9' ||
+         StartTime[4] > '9' ||
          cin.peek() == ' ')
         return false;
     else 
