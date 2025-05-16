@@ -1,0 +1,214 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <SFML/Graphics.hpp>
+#include <string>
+#include <iostream>
+#include "Backend.h"
+
+
+
+
+
+class TextBox {
+public:
+    sf::RectangleShape box;
+    sf::Text text;
+    bool isPassword;
+    bool isFocused = false;
+
+    TextBox(sf::Font& font, const std::string& placeholder, sf::Vector2f pos, sf::Vector2f size, bool password = false) {
+        box.setSize(size);
+        box.setPosition(pos);
+        box.setFillColor(sf::Color(60, 60, 60));
+        box.setOutlineThickness(2);
+        box.setOutlineColor(sf::Color::White);
+
+        text.setFont(font);
+        text.setString(placeholder);
+        text.setCharacterSize(20);
+        text.setPosition(pos.x + 10, pos.y + 5);
+        text.setFillColor(sf::Color(180, 180, 180));
+
+        isPassword = password;
+    }
+
+    void draw(sf::RenderWindow& window) {
+        window.draw(box);
+        window.draw(text);
+    }
+
+    void handleInput(sf::Event event, std::string& content) {
+        if (!isFocused) return;
+
+        if (event.type == sf::Event::TextEntered) {
+            if (event.text.unicode == 8 && !content.empty()) {
+                content.pop_back();
+            }
+            else if (event.text.unicode >= 32 && event.text.unicode <= 126) {
+                content += static_cast<char>(event.text.unicode);
+            }
+            updateDisplay(content);
+        }
+    }
+
+    void updateDisplay(const std::string& content) {
+        std::string display = isPassword ? std::string(content.length(), '*') : content;
+        text.setString(display);
+    }
+};
+
+class Button {
+public:
+    sf::RectangleShape box;
+    sf::Text label;
+
+    Button(const std::string& title, sf::Font& font, sf::Vector2f pos) {
+        box.setSize({ 140, 40 });
+        box.setPosition(pos);
+        box.setFillColor(sf::Color(80, 80, 200));
+
+        label.setFont(font);
+        label.setString(title);
+        label.setCharacterSize(20);
+        label.setFillColor(sf::Color::White);
+        label.setPosition(pos.x + 20, pos.y + 8);
+    }
+
+    void draw(sf::RenderWindow& window) {
+        window.draw(box);
+        window.draw(label);
+    }
+
+    bool isClicked(sf::Vector2i mousePos) {
+        return box.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
+    }
+};
+
+int main() {
+    sf::RenderWindow window(sf::VideoMode(600, 500), "Login UI", sf::Style::Close);
+    sf::Font font;
+    font.loadFromFile("SegoeUI.ttf");
+
+    TextBox userBox(font, "Enter ID", { 100, 100 }, { 400, 40 });
+    TextBox passBox(font, "Password", { 100, 160 }, { 400, 40 }, true);
+    Button loginBtn("Login", font, { 120, 240 });
+    Button registerBtn("Register", font, { 320, 240 });
+
+    bool showRegister = false;
+    TextBox regNameBox(font, "Your Name", { 100, 100 }, { 400, 40 });
+    TextBox regPassBox(font, "Password", { 100, 160 }, { 400, 40 }, true);
+    TextBox regConfirmBox(font, "Confirm Password", { 100, 220 }, { 400, 40 }, true);
+    Button regSubmitBtn("Submit", font, { 230, 280 });
+
+    std::string userInput, passInput;
+    std::string regName, regPass, regConfirm;
+
+    sf::Text feedback;
+    feedback.setFont(font);
+    feedback.setCharacterSize(18);
+    feedback.setFillColor(sf::Color::White);
+    feedback.setPosition(100, 400);
+    feedback.setString("");
+
+    LoadCustomersFromFile("customers.txt");
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed) {
+                sf::Vector2f mouse = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                if (!showRegister) {
+                    userBox.isFocused = userBox.box.getGlobalBounds().contains(mouse);
+                    passBox.isFocused = passBox.box.getGlobalBounds().contains(mouse);
+
+                    if (loginBtn.isClicked(sf::Mouse::getPosition(window))) {
+                        int uid = std::stoi(userInput);
+                        int found = -1;
+                        for (int i = 0; i < customers_num; ++i) {
+                            if (Custs[i].ID == uid && Custs[i].password == passInput) {
+                                found = i;
+                                break;
+                            }
+                        }
+                        feedback.setFillColor(found >= 0 ? sf::Color::Green : sf::Color::Red);
+                        feedback.setString(found >= 0 ? "Login successful!" : "Login failed. Try again.");
+                    }
+
+                    if (registerBtn.isClicked(sf::Mouse::getPosition(window))) {
+                        showRegister = true;
+                        feedback.setString("");
+                    }
+                }
+                else {
+                    regNameBox.isFocused = regNameBox.box.getGlobalBounds().contains(mouse);
+                    regPassBox.isFocused = regPassBox.box.getGlobalBounds().contains(mouse);
+                    regConfirmBox.isFocused = regConfirmBox.box.getGlobalBounds().contains(mouse);
+
+                    if (regSubmitBtn.isClicked(sf::Mouse::getPosition(window))) {
+                        if (regPass != regConfirm) {
+                            feedback.setFillColor(sf::Color::Red);
+                            feedback.setString("Password mismatch.");
+                        }
+                        else {
+                            int index = -1;
+                            for (int i = 0; i < customers_num; ++i) {
+                                if (Custs[i].ID == 0) {
+                                    index = i;
+                                    break;
+                                }
+                            }
+                            if (index != -1) {
+                                Custs[index].ID = index + 1000;
+                                Custs[index].name = regName;
+                                Custs[index].password = regPass;
+                                Custs[index].res = 0;
+                                SaveCustomersToFile("customers.txt");
+
+                                feedback.setFillColor(sf::Color::Green);
+                                feedback.setString("Registered! Your ID: " + std::to_string(Custs[index].ID));
+                                showRegister = false;
+                            }
+                            else {
+                                feedback.setFillColor(sf::Color::Red);
+                                feedback.setString("Registration full.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!showRegister) {
+                userBox.handleInput(event, userInput);
+                passBox.handleInput(event, passInput);
+            }
+            else {
+                regNameBox.handleInput(event, regName);
+                regPassBox.handleInput(event, regPass);
+                regConfirmBox.handleInput(event, regConfirm);
+            }
+        }
+
+        window.clear(sf::Color(30, 30, 30));
+        if (!showRegister) {
+            userBox.draw(window);
+            passBox.draw(window);
+            loginBtn.draw(window);
+            registerBtn.draw(window);
+        }
+        else {
+            regNameBox.draw(window);
+            regPassBox.draw(window);
+            regConfirmBox.draw(window);
+            regSubmitBtn.draw(window);
+        }
+
+        if (!feedback.getString().isEmpty()) {
+            window.draw(feedback);
+        }
+
+        window.display();
+    }
+    return 0;
+}
